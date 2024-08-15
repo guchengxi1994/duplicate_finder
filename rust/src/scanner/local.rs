@@ -39,18 +39,21 @@ impl Scanner for LocalScanner {
             match received {
                 Some(path) => {
                     path_list.push(path);
-                    let _ = Self::store_results(path_list.clone()).await;
                     if path_list.len() >= LIMIT {
+                        Self::store_results(path_list.clone()).await?;
                         // 达到限制，清空列表
                         path_list.clear();
                     }
                 }
                 None => {
-                    let _ = self.on_finished();
+                    // 这里扫描结束
                     break;
                 }
             }
         }
+
+        Self::store_results(path_list.clone()).await?;
+        self.on_finished()?;
 
         anyhow::Ok(())
     }

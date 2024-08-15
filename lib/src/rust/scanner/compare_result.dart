@@ -11,15 +11,18 @@ class CompareResult {
   final BigInt index;
   final BigInt groupId;
   final List<File> files;
+  final BigInt fileSize;
 
   const CompareResult({
     required this.index,
     required this.groupId,
     required this.files,
+    required this.fileSize,
   });
 
   @override
-  int get hashCode => index.hashCode ^ groupId.hashCode ^ files.hashCode;
+  int get hashCode =>
+      index.hashCode ^ groupId.hashCode ^ files.hashCode ^ fileSize.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -28,7 +31,8 @@ class CompareResult {
           runtimeType == other.runtimeType &&
           index == other.index &&
           groupId == other.groupId &&
-          files == other.files;
+          files == other.files &&
+          fileSize == other.fileSize;
 }
 
 class CompareResults {

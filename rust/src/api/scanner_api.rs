@@ -25,6 +25,11 @@ pub fn event_stream(s: StreamSink<Event>) -> anyhow::Result<()> {
 }
 
 pub fn scan(p: String) {
+    {
+        let mut file_set = crate::scanner::file::GLOBAL_FILESET.write().unwrap();
+        (*file_set).clear();
+    }
+
     let rt = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()

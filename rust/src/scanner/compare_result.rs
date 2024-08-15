@@ -9,6 +9,7 @@ pub struct CompareResult {
     pub index: u64,
     pub group_id: u64,
     pub files: Vec<File>,
+    pub file_size: u64,
 }
 
 #[derive(Debug)]
@@ -19,11 +20,14 @@ impl CompareResult {
         let mut i = 0;
         let mut result = Vec::new();
         for (group_id, files) in set.0 {
+            let file_size = files.first().unwrap().size;
+
             i += 1;
             result.push(CompareResult {
                 index: i,
                 group_id,
                 files,
+                file_size,
             });
         }
 
