@@ -27,6 +27,10 @@ class ScannerNotifier extends Notifier<ScannerState> {
   }
 
   changeAsc() {
+    if (state.compareResults == null) {
+      return;
+    }
+
     bool b = !state.asc;
     if (b) {
       state = state.copyWith(
@@ -42,6 +46,10 @@ class ScannerNotifier extends Notifier<ScannerState> {
   }
 
   refreshList() {
+    if (state.compareResults == null) {
+      return;
+    }
+
     state = state.copyWith(
         asc: true,
         results: state.results..sort((a, b) => a.index.compareTo(b.index)));

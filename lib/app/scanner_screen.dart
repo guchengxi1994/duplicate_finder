@@ -1,6 +1,7 @@
+import 'package:data_table_2/data_table_2.dart';
+import 'package:duplicate_finder/app/datasource.dart';
 import 'package:duplicate_finder/src/rust/api/scanner_api.dart';
 import 'package:duplicate_finder/src/rust/scanner/compare_result.dart';
-import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -80,116 +81,86 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
               height: 10,
             ),
             Expanded(
-              child: SingleChildScrollView(
-                child: Table(
-                  border: TableBorder.all(),
-                  columnWidths: const <int, TableColumnWidth>{
-                    0: FixedColumnWidth(100),
-                    1: FixedColumnWidth(100),
-                    2: FlexColumnWidth(),
-                  },
-                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                  children: [
-                    // Header Row
-                    TableRow(
-                      children: [
-                        TableCell(
-                            child: InkWell(
-                          onTap: () {
-                            ref
-                                .read(scannerNotifierProvider.notifier)
-                                .refreshList();
-                          },
-                          child: const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  Text('Index',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold)),
-                                  Spacer(),
-                                  Icon(Icons.refresh)
-                                ],
-                              )),
-                        )),
-                        TableCell(
-                            child: InkWell(
-                          onTap: () {
-                            ref
-                                .read(scannerNotifierProvider.notifier)
-                                .changeAsc();
-                          },
-                          child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  const Text('File Size',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold)),
-                                  const Spacer(),
-                                  if (state.asc)
-                                    const Icon(Icons.arrow_upward)
-                                  else
-                                    const Icon(Icons.arrow_downward)
-                                ],
-                              )),
-                        )),
-                        TableCell(
-                            child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  children: [
-                                    const Text('Files',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold)),
-                                    const Spacer(),
-                                    InkWell(
-                                      onTap: () {
-                                        ref
-                                            .read(scannerNotifierProvider
-                                                .notifier)
-                                            .changeShowAll();
-                                      },
-                                      child: state.showAll
-                                          ? const Icon(Icons.visibility)
-                                          : const Icon(Icons.visibility_off),
-                                    ),
-                                    const SizedBox(
-                                      width: 20,
-                                    ),
-                                  ],
-                                ))),
-                      ],
-                    ),
-                    // Data Rows
-                    for (CompareResult result in state.results)
-                      TableRow(
-                        children: [
-                          TableCell(
-                              child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(result.index.toString()))),
-                          TableCell(
-                              child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(filesize(result.fileSize)))),
-                          TableCell(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(result.files
-                                  .map((file) => file.path)
-                                  .join(', ')),
-                            ),
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-              ),
+              child: buildTable(state.results),
             )
           ],
         ),
       ),
     );
+  }
+
+  Widget buildTable(List<CompareResult> results) {
+    return PaginatedDataTable2(
+        columns: columns, source: ScannerDatasource(context, results));
+  }
+
+  List<DataColumn> get columns => _getColumns();
+
+  List<DataColumn> _getColumns() {
+    final asc = ref.watch(scannerNotifierProvider.select((v) => v.asc));
+    final showAll = ref.watch(scannerNotifierProvider.select((v) => v.showAll));
+
+    return [
+      DataColumn2(
+          fixedWidth: 150,
+          label: InkWell(
+            onTap: () {
+              ref.read(scannerNotifierProvider.notifier).refreshList();
+            },
+            child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Text('Index',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Spacer(),
+                    Icon(Icons.refresh)
+                  ],
+                )),
+          )),
+      DataColumn2(
+          fixedWidth: 150,
+          label: InkWell(
+            onTap: () {
+              ref.read(scannerNotifierProvider.notifier).changeAsc();
+            },
+            child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    const Text('File Size',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Spacer(),
+                    if (asc)
+                      const Icon(Icons.arrow_upward)
+                    else
+                      const Icon(Icons.arrow_downward)
+                  ],
+                )),
+          )),
+      DataColumn2(
+          label: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  const Text('Files',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Spacer(),
+                  InkWell(
+                    onTap: () {
+                      ref
+                          .read(scannerNotifierProvider.notifier)
+                          .changeShowAll();
+                    },
+                    child: showAll
+                        ? const Icon(Icons.visibility)
+                        : const Icon(Icons.visibility_off),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                ],
+              ))),
+    ];
   }
 }
