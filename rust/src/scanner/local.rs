@@ -1,4 +1,7 @@
-use std::{sync::mpsc, thread};
+use std::{
+    sync::{mpsc, Arc, RwLock},
+    thread,
+};
 
 use walkdir::WalkDir;
 
@@ -16,43 +19,47 @@ const LIMIT: usize = 100;
 #[async_trait::async_trait]
 impl Scanner for LocalScanner {
     async fn scan(&self) -> anyhow::Result<()> {
-        let (tx, rx) = mpsc::channel::<Option<String>>();
+        let (tx, rx) = mpsc::channel::<String>();
         let s = self.0.clone();
 
         send_event("LocalScanner".to_string(), "scan start".to_string());
 
-        thread::spawn(move || {
-            for entry in WalkDir::new(&s).into_iter().filter_map(|e| e.ok()) {
-                if entry.path().is_file() {
-                    let l = entry.path().display().to_string();
-                    // 发送文件路径
-                    tx.send(Some(l)).unwrap();
+        let total = Arc::new(RwLock::new(0));
+
+        {
+            let total = Arc::clone(&total);
+            thread::spawn(move || {
+                for entry in WalkDir::new(&s).into_iter().filter_map(|e| e.ok()) {
+                    if entry.path().is_file() {
+                        {
+                            let mut total_write = total.write().unwrap();
+                            *total_write += 1;
+                        }
+
+                        let l = entry.path().display().to_string();
+                        // 发送文件路径
+                        tx.send(l).unwrap();
+                    }
                 }
-            }
-            // 发送结束信号
-            tx.send(None).unwrap();
-        });
+            });
+        }
 
         let mut path_list: Vec<String> = Vec::new();
 
         for received in rx {
-            match received {
-                Some(path) => {
-                    path_list.push(path);
-                    if path_list.len() >= LIMIT {
-                        Self::store_results(path_list.clone()).await?;
-                        // 达到限制，清空列表
-                        path_list.clear();
-                    }
-                }
-                None => {
-                    // 这里扫描结束
-                    break;
-                }
+            path_list.push(received);
+            if path_list.len() >= LIMIT {
+                let count = format!("{}", *total.read().unwrap());
+                send_event("LocalScanner".to_string(), count);
+                Self::store_results(path_list.clone())?;
+                // 达到限制，清空列表
+                path_list.clear();
             }
         }
 
-        Self::store_results(path_list.clone()).await?;
+        Self::store_results(path_list.clone())?;
+        let count = format!("{}", *total.read().unwrap());
+        send_event("LocalScanner".to_string(), count);
         self.on_finished()?;
 
         anyhow::Ok(())
@@ -85,7 +92,7 @@ impl Scanner for LocalScanner {
         anyhow::Ok(())
     }
 
-    async fn store_results(p: Vec<String>) -> anyhow::Result<()> {
+    fn store_results(p: Vec<String>) -> anyhow::Result<()> {
         let mut results: Vec<File> = Vec::new();
         for path in p {
             if let Ok(f) = File::from_path(path) {

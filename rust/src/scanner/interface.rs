@@ -4,7 +4,7 @@ use super::file::GLOBAL_FILESET;
 pub trait Scanner {
     async fn scan(&self) -> anyhow::Result<()>;
 
-    async fn store_results(p: Vec<String>) -> anyhow::Result<()>;
+    fn store_results(p: Vec<String>) -> anyhow::Result<()>;
 
     fn on_finished(&self) -> anyhow::Result<()>;
 

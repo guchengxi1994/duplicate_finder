@@ -243,13 +243,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   CompareResult dco_decode_compare_result(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 4)
-      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
     return CompareResult(
       index: dco_decode_u_64(arr[0]),
-      groupId: dco_decode_u_64(arr[1]),
-      files: dco_decode_list_file(arr[2]),
-      fileSize: dco_decode_u_64(arr[3]),
+      files: dco_decode_list_file(arr[1]),
+      fileSize: dco_decode_u_64(arr[2]),
     );
   }
 
@@ -357,14 +356,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   CompareResult sse_decode_compare_result(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_index = sse_decode_u_64(deserializer);
-    var var_groupId = sse_decode_u_64(deserializer);
     var var_files = sse_decode_list_file(deserializer);
     var var_fileSize = sse_decode_u_64(deserializer);
     return CompareResult(
-        index: var_index,
-        groupId: var_groupId,
-        files: var_files,
-        fileSize: var_fileSize);
+        index: var_index, files: var_files, fileSize: var_fileSize);
   }
 
   @protected
@@ -495,7 +490,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_compare_result(CompareResult self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_64(self.index, serializer);
-    sse_encode_u_64(self.groupId, serializer);
     sse_encode_list_file(self.files, serializer);
     sse_encode_u_64(self.fileSize, serializer);
   }

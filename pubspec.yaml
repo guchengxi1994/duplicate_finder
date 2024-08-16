@@ -13,8 +13,11 @@ dependencies:
   filesize: ^2.0.1
   flutter:
     sdk: flutter
+  flutter_riverpod: ^2.5.1
   flutter_rust_bridge: 2.2.0
+  flutter_tags_x: ^1.1.0
   logging: ^1.2.0
+  riverpod: ^2.5.1
   rust_lib_duplicate_finder:
     path: rust_builder
   window_manager: ^0.4.0

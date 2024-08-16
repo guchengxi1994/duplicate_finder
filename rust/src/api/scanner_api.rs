@@ -37,6 +37,12 @@ pub fn scan(p: String) {
 
     rt.block_on(async {
         let s = LocalScanner(p);
-        let _ = s.scan().await;
+        let r = s.scan().await;
+        match r {
+            Ok(_) => {}
+            Err(e) => {
+                println!("[rust] error {}", e);
+            }
+        }
     });
 }

@@ -137,10 +137,10 @@ impl FileSet {
 
     pub fn update_list(&mut self, files: Vec<File>) {
         for file in files {
-            if self.0.contains_key(&file.default_hash()) {
-                self.0.get_mut(&file.default_hash()).unwrap().push(file);
+            if self.0.contains_key(&file.size) {
+                self.0.get_mut(&file.size).unwrap().push(file);
             } else {
-                self.0.insert(file.default_hash(), vec![file]);
+                self.0.insert(file.size, vec![file]);
             }
         }
     }
