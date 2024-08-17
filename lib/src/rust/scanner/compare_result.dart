@@ -9,20 +9,23 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 class CompareResult {
   final BigInt index;
-  final BigInt groupId;
-  final List<File> files;
   final BigInt fileSize;
+  final List<List<File>> allSameFiles;
+  final BigInt count;
 
   const CompareResult({
     required this.index,
-    required this.groupId,
-    required this.files,
     required this.fileSize,
+    required this.allSameFiles,
+    required this.count,
   });
 
   @override
   int get hashCode =>
-      index.hashCode ^ groupId.hashCode ^ files.hashCode ^ fileSize.hashCode;
+      index.hashCode ^
+      fileSize.hashCode ^
+      allSameFiles.hashCode ^
+      count.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -30,25 +33,7 @@ class CompareResult {
       other is CompareResult &&
           runtimeType == other.runtimeType &&
           index == other.index &&
-          groupId == other.groupId &&
-          files == other.files &&
-          fileSize == other.fileSize;
-}
-
-class CompareResults {
-  final List<CompareResult> field0;
-
-  const CompareResults({
-    required this.field0,
-  });
-
-  @override
-  int get hashCode => field0.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is CompareResults &&
-          runtimeType == other.runtimeType &&
-          field0 == other.field0;
+          fileSize == other.fileSize &&
+          allSameFiles == other.allSameFiles &&
+          count == other.count;
 }

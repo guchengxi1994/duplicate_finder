@@ -9,8 +9,8 @@ import '../scanner/event.dart';
 import '../scanner/file.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-Stream<CompareResults> scannerCompareResultsStream() =>
-    RustLib.instance.api.crateApiScannerApiScannerCompareResultsStream();
+Stream<CompareResult> scannerRefreshResultsStream() =>
+    RustLib.instance.api.crateApiScannerApiScannerRefreshResultsStream();
 
 Stream<Event> eventStream() =>
     RustLib.instance.api.crateApiScannerApiEventStream();

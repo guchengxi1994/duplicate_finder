@@ -26,7 +26,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   AnyhowException dco_decode_AnyhowException(dynamic raw);
 
   @protected
-  RustStreamSink<CompareResults> dco_decode_StreamSink_compare_results_Sse(
+  RustStreamSink<CompareResult> dco_decode_StreamSink_compare_result_Sse(
       dynamic raw);
 
   @protected
@@ -39,19 +39,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   CompareResult dco_decode_compare_result(dynamic raw);
 
   @protected
-  CompareResults dco_decode_compare_results(dynamic raw);
-
-  @protected
   Event dco_decode_event(dynamic raw);
 
   @protected
   File dco_decode_file(dynamic raw);
 
   @protected
-  List<CompareResult> dco_decode_list_compare_result(dynamic raw);
+  List<File> dco_decode_list_file(dynamic raw);
 
   @protected
-  List<File> dco_decode_list_file(dynamic raw);
+  List<List<File>> dco_decode_list_list_file(dynamic raw);
 
   @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
@@ -69,7 +66,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   AnyhowException sse_decode_AnyhowException(SseDeserializer deserializer);
 
   @protected
-  RustStreamSink<CompareResults> sse_decode_StreamSink_compare_results_Sse(
+  RustStreamSink<CompareResult> sse_decode_StreamSink_compare_result_Sse(
       SseDeserializer deserializer);
 
   @protected
@@ -83,20 +80,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   CompareResult sse_decode_compare_result(SseDeserializer deserializer);
 
   @protected
-  CompareResults sse_decode_compare_results(SseDeserializer deserializer);
-
-  @protected
   Event sse_decode_event(SseDeserializer deserializer);
 
   @protected
   File sse_decode_file(SseDeserializer deserializer);
 
   @protected
-  List<CompareResult> sse_decode_list_compare_result(
-      SseDeserializer deserializer);
+  List<File> sse_decode_list_file(SseDeserializer deserializer);
 
   @protected
-  List<File> sse_decode_list_file(SseDeserializer deserializer);
+  List<List<File>> sse_decode_list_list_file(SseDeserializer deserializer);
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
@@ -121,8 +114,8 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       AnyhowException self, SseSerializer serializer);
 
   @protected
-  void sse_encode_StreamSink_compare_results_Sse(
-      RustStreamSink<CompareResults> self, SseSerializer serializer);
+  void sse_encode_StreamSink_compare_result_Sse(
+      RustStreamSink<CompareResult> self, SseSerializer serializer);
 
   @protected
   void sse_encode_StreamSink_event_Sse(
@@ -135,21 +128,17 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_compare_result(CompareResult self, SseSerializer serializer);
 
   @protected
-  void sse_encode_compare_results(
-      CompareResults self, SseSerializer serializer);
-
-  @protected
   void sse_encode_event(Event self, SseSerializer serializer);
 
   @protected
   void sse_encode_file(File self, SseSerializer serializer);
 
   @protected
-  void sse_encode_list_compare_result(
-      List<CompareResult> self, SseSerializer serializer);
+  void sse_encode_list_file(List<File> self, SseSerializer serializer);
 
   @protected
-  void sse_encode_list_file(List<File> self, SseSerializer serializer);
+  void sse_encode_list_list_file(
+      List<List<File>> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_prim_u_8_strict(

@@ -37,7 +37,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.2.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1517329721;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1654578342;
 
 // Section: executor
 
@@ -115,14 +115,14 @@ fn wire__crate__api__scanner_api__scan_impl(
         },
     )
 }
-fn wire__crate__api__scanner_api__scanner_compare_results_stream_impl(
+fn wire__crate__api__scanner_api__scanner_refresh_results_stream_impl(
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
-            debug_name: "scanner_compare_results_stream",
+            debug_name: "scanner_refresh_results_stream",
             port: None,
             mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
         },
@@ -137,13 +137,13 @@ fn wire__crate__api__scanner_api__scanner_compare_results_stream_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_s = <StreamSink<
-                crate::scanner::compare_result::CompareResults,
+                crate::scanner::compare_result::CompareResult,
                 flutter_rust_bridge::for_generated::SseCodec,
             >>::sse_decode(&mut deserializer);
             deserializer.end();
             transform_result_sse::<_, flutter_rust_bridge::for_generated::anyhow::Error>(
                 (move || {
-                    let output_ok = crate::api::scanner_api::scanner_compare_results_stream(api_s)?;
+                    let output_ok = crate::api::scanner_api::scanner_refresh_results_stream(api_s)?;
                     Ok(output_ok)
                 })(),
             )
@@ -227,7 +227,7 @@ impl SseDecode for flutter_rust_bridge::for_generated::anyhow::Error {
 
 impl SseDecode
     for StreamSink<
-        crate::scanner::compare_result::CompareResults,
+        crate::scanner::compare_result::CompareResult,
         flutter_rust_bridge::for_generated::SseCodec,
     >
 {
@@ -260,24 +260,15 @@ impl SseDecode for crate::scanner::compare_result::CompareResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_index = <u64>::sse_decode(deserializer);
-        let mut var_groupId = <u64>::sse_decode(deserializer);
-        let mut var_files = <Vec<crate::scanner::file::File>>::sse_decode(deserializer);
         let mut var_fileSize = <u64>::sse_decode(deserializer);
+        let mut var_allSameFiles = <Vec<Vec<crate::scanner::file::File>>>::sse_decode(deserializer);
+        let mut var_count = <u64>::sse_decode(deserializer);
         return crate::scanner::compare_result::CompareResult {
             index: var_index,
-            group_id: var_groupId,
-            files: var_files,
             file_size: var_fileSize,
+            all_same_files: var_allSameFiles,
+            count: var_count,
         };
-    }
-}
-
-impl SseDecode for crate::scanner::compare_result::CompareResults {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut var_field0 =
-            <Vec<crate::scanner::compare_result::CompareResult>>::sse_decode(deserializer);
-        return crate::scanner::compare_result::CompareResults(var_field0);
     }
 }
 
@@ -307,20 +298,6 @@ impl SseDecode for crate::scanner::file::File {
     }
 }
 
-impl SseDecode for Vec<crate::scanner::compare_result::CompareResult> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
-        let mut len_ = <i32>::sse_decode(deserializer);
-        let mut ans_ = vec![];
-        for idx_ in 0..len_ {
-            ans_.push(<crate::scanner::compare_result::CompareResult>::sse_decode(
-                deserializer,
-            ));
-        }
-        return ans_;
-    }
-}
-
 impl SseDecode for Vec<crate::scanner::file::File> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -328,6 +305,18 @@ impl SseDecode for Vec<crate::scanner::file::File> {
         let mut ans_ = vec![];
         for idx_ in 0..len_ {
             ans_.push(<crate::scanner::file::File>::sse_decode(deserializer));
+        }
+        return ans_;
+    }
+}
+
+impl SseDecode for Vec<Vec<crate::scanner::file::File>> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = vec![];
+        for idx_ in 0..len_ {
+            ans_.push(<Vec<crate::scanner::file::File>>::sse_decode(deserializer));
         }
         return ans_;
     }
@@ -402,7 +391,7 @@ fn pde_ffi_dispatcher_sync_impl(
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
         1 => wire__crate__api__scanner_api__event_stream_impl(ptr, rust_vec_len, data_len),
-        3 => wire__crate__api__scanner_api__scanner_compare_results_stream_impl(
+        3 => wire__crate__api__scanner_api__scanner_refresh_results_stream_impl(
             ptr,
             rust_vec_len,
             data_len,
@@ -419,9 +408,9 @@ impl flutter_rust_bridge::IntoDart for crate::scanner::compare_result::CompareRe
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.index.into_into_dart().into_dart(),
-            self.group_id.into_into_dart().into_dart(),
-            self.files.into_into_dart().into_dart(),
             self.file_size.into_into_dart().into_dart(),
+            self.all_same_files.into_into_dart().into_dart(),
+            self.count.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -434,23 +423,6 @@ impl flutter_rust_bridge::IntoIntoDart<crate::scanner::compare_result::CompareRe
     for crate::scanner::compare_result::CompareResult
 {
     fn into_into_dart(self) -> crate::scanner::compare_result::CompareResult {
-        self
-    }
-}
-// Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::scanner::compare_result::CompareResults {
-    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
-        [self.0.into_into_dart().into_dart()].into_dart()
-    }
-}
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
-    for crate::scanner::compare_result::CompareResults
-{
-}
-impl flutter_rust_bridge::IntoIntoDart<crate::scanner::compare_result::CompareResults>
-    for crate::scanner::compare_result::CompareResults
-{
-    fn into_into_dart(self) -> crate::scanner::compare_result::CompareResults {
         self
     }
 }
@@ -499,7 +471,7 @@ impl SseEncode for flutter_rust_bridge::for_generated::anyhow::Error {
 
 impl SseEncode
     for StreamSink<
-        crate::scanner::compare_result::CompareResults,
+        crate::scanner::compare_result::CompareResult,
         flutter_rust_bridge::for_generated::SseCodec,
     >
 {
@@ -529,16 +501,9 @@ impl SseEncode for crate::scanner::compare_result::CompareResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <u64>::sse_encode(self.index, serializer);
-        <u64>::sse_encode(self.group_id, serializer);
-        <Vec<crate::scanner::file::File>>::sse_encode(self.files, serializer);
         <u64>::sse_encode(self.file_size, serializer);
-    }
-}
-
-impl SseEncode for crate::scanner::compare_result::CompareResults {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <Vec<crate::scanner::compare_result::CompareResult>>::sse_encode(self.0, serializer);
+        <Vec<Vec<crate::scanner::file::File>>>::sse_encode(self.all_same_files, serializer);
+        <u64>::sse_encode(self.count, serializer);
     }
 }
 
@@ -559,22 +524,22 @@ impl SseEncode for crate::scanner::file::File {
     }
 }
 
-impl SseEncode for Vec<crate::scanner::compare_result::CompareResult> {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
-        <i32>::sse_encode(self.len() as _, serializer);
-        for item in self {
-            <crate::scanner::compare_result::CompareResult>::sse_encode(item, serializer);
-        }
-    }
-}
-
 impl SseEncode for Vec<crate::scanner::file::File> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
             <crate::scanner::file::File>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<Vec<crate::scanner::file::File>> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <Vec<crate::scanner::file::File>>::sse_encode(item, serializer);
         }
     }
 }
