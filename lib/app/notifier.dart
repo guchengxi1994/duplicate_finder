@@ -65,7 +65,14 @@ class ScannerNotifier extends Notifier<ScannerState> {
     } else {
       state = state.copyWith(
           showAll: b,
-          results: state.results.where((v) => v.files.length > 1).toList());
+          results: state.results.where((v) {
+            for (final i in v.allSameFiles) {
+              if (i.length > 1) {
+                return true;
+              }
+            }
+            return false;
+          }).toList());
     }
   }
 

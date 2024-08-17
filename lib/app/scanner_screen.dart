@@ -90,6 +90,16 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
   }
 
   Widget buildTable(List<CompareResult> results) {
+    if (results.isEmpty) {
+      return Center(
+        child: SizedBox(
+          width: 300,
+          height: 300,
+          child: Image.asset("assets/icon.jpeg"),
+        ),
+      );
+    }
+
     return PaginatedDataTable2(
         columns: columns, source: ScannerDatasource(context, results));
   }

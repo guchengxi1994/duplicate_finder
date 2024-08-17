@@ -3,6 +3,9 @@ import 'package:duplicate_finder/src/rust/scanner/compare_result.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 
+// ignore: depend_on_referenced_packages
+import 'package:collection/collection.dart';
+
 class ScannerDatasource extends DataTableSource {
   final BuildContext context;
   late List<CompareResult> results;
@@ -12,7 +15,7 @@ class ScannerDatasource extends DataTableSource {
   @override
   DataRow2? getRow(int index) {
     return DataRow2(
-      specificRowHeight: results[index].files.length * 50,
+      specificRowHeight: results[index].count.toDouble() * 50 + 16,
       cells: [
         DataCell(Padding(
             padding: const EdgeInsets.all(8.0),
@@ -22,13 +25,49 @@ class ScannerDatasource extends DataTableSource {
             child: Text(filesize(results[index].fileSize)))),
         DataCell(
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child:
-                Text(results[index].files.map((file) => file.path).join(', ')),
+            padding: const EdgeInsets.only(top: 8, bottom: 8),
+            child: buildResult(results[index]),
           ),
         ),
       ],
     );
+  }
+
+  Widget buildResult(CompareResult result) {
+    return ListView.builder(
+        itemCount: result.allSameFiles.length,
+        itemBuilder: (c, i) {
+          return Align(
+            alignment: Alignment.centerLeft,
+            child: Material(
+                borderRadius: BorderRadius.circular(10),
+                elevation: 10,
+                child: Container(
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                  height: result.allSameFiles[i].length * 50,
+                  child: Column(
+                    children: result.allSameFiles[i]
+                        .mapIndexed((i, v) => Tooltip(
+                              waitDuration: const Duration(seconds: 1),
+                              message: v.path,
+                              child: SizedBox(
+                                height: 50,
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 16, right: 16),
+                                    child: Text("${i + 1}. ${v.name}"),
+                                  ),
+                                ),
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                )),
+          );
+        });
   }
 
   @override
