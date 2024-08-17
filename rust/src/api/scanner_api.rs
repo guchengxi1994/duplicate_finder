@@ -3,16 +3,23 @@ use flutter_rust_bridge::frb;
 use crate::{
     frb_generated::StreamSink,
     scanner::{
-        compare_result::{CompareResults, SCANNER_COMPARE_RESULTS_SINK},
+        compare_result::{CompareResult, SCANNER_REFRESH_RESULTS_SINK},
         event::{Event, EVENT_SINK},
         interface::Scanner,
         local::LocalScanner,
     },
 };
 
+// #[frb(sync)]
+// pub fn scanner_compare_results_stream(s: StreamSink<CompareResults>) -> anyhow::Result<()> {
+//     let mut stream = SCANNER_COMPARE_RESULTS_SINK.write().unwrap();
+//     *stream = Some(s);
+//     anyhow::Ok(())
+// }
+
 #[frb(sync)]
-pub fn scanner_compare_results_stream(s: StreamSink<CompareResults>) -> anyhow::Result<()> {
-    let mut stream = SCANNER_COMPARE_RESULTS_SINK.write().unwrap();
+pub fn scanner_refresh_results_stream(s: StreamSink<CompareResult>) -> anyhow::Result<()> {
+    let mut stream = SCANNER_REFRESH_RESULTS_SINK.write().unwrap();
     *stream = Some(s);
     anyhow::Ok(())
 }

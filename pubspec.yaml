@@ -2,12 +2,13 @@ name: duplicate_finder
 description: "a duplicate finder tool."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.0.0+1.dev.0
+version: 1.0.0
 
 environment:
   sdk: ^3.5.0
 
 dependencies:
+  animated_text_kit: ^4.2.2
   cupertino_icons: ^1.0.8
   data_table_2: ^2.5.15
   file_selector: ^1.0.3

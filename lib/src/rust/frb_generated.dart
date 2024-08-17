@@ -62,7 +62,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.2.0';
 
   @override
-  int get rustContentHash => 1517329721;
+  int get rustContentHash => -1654578342;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -77,7 +77,7 @@ abstract class RustLibApi extends BaseApi {
 
   Future<void> crateApiScannerApiScan({required String p});
 
-  Stream<CompareResults> crateApiScannerApiScannerCompareResultsStream();
+  Stream<CompareResult> crateApiScannerApiScannerRefreshResultsStream();
 
   String crateApiSimpleGreet({required String name});
 
@@ -143,28 +143,28 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Stream<CompareResults> crateApiScannerApiScannerCompareResultsStream() {
-    final s = RustStreamSink<CompareResults>();
+  Stream<CompareResult> crateApiScannerApiScannerRefreshResultsStream() {
+    final s = RustStreamSink<CompareResult>();
     handler.executeSync(SyncTask(
       callFfi: () {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_StreamSink_compare_results_Sse(s, serializer);
+        sse_encode_StreamSink_compare_result_Sse(s, serializer);
         return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 3)!;
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
         decodeErrorData: sse_decode_AnyhowException,
       ),
-      constMeta: kCrateApiScannerApiScannerCompareResultsStreamConstMeta,
+      constMeta: kCrateApiScannerApiScannerRefreshResultsStreamConstMeta,
       argValues: [s],
       apiImpl: this,
     ));
     return s.stream;
   }
 
-  TaskConstMeta get kCrateApiScannerApiScannerCompareResultsStreamConstMeta =>
+  TaskConstMeta get kCrateApiScannerApiScannerRefreshResultsStreamConstMeta =>
       const TaskConstMeta(
-        debugName: "scanner_compare_results_stream",
+        debugName: "scanner_refresh_results_stream",
         argNames: ["s"],
       );
 
@@ -221,7 +221,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  RustStreamSink<CompareResults> dco_decode_StreamSink_compare_results_Sse(
+  RustStreamSink<CompareResult> dco_decode_StreamSink_compare_result_Sse(
       dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     throw UnimplementedError();
@@ -254,17 +254,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  CompareResults dco_decode_compare_results(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    final arr = raw as List<dynamic>;
-    if (arr.length != 1)
-      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
-    return CompareResults(
-      field0: dco_decode_list_compare_result(arr[0]),
-    );
-  }
-
-  @protected
   Event dco_decode_event(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
@@ -287,12 +276,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       name: dco_decode_String(arr[1]),
       size: dco_decode_u_64(arr[2]),
     );
-  }
-
-  @protected
-  List<CompareResult> dco_decode_list_compare_result(dynamic raw) {
-    // Codec=Dco (DartCObject based), see doc to use other codecs
-    return (raw as List<dynamic>).map(dco_decode_compare_result).toList();
   }
 
   @protected
@@ -339,7 +322,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  RustStreamSink<CompareResults> sse_decode_StreamSink_compare_results_Sse(
+  RustStreamSink<CompareResult> sse_decode_StreamSink_compare_result_Sse(
       SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     throw UnimplementedError('Unreachable ()');
@@ -374,13 +357,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  CompareResults sse_decode_compare_results(SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    var var_field0 = sse_decode_list_compare_result(deserializer);
-    return CompareResults(field0: var_field0);
-  }
-
-  @protected
   Event sse_decode_event(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_eventType = sse_decode_String(deserializer);
@@ -395,19 +371,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_name = sse_decode_String(deserializer);
     var var_size = sse_decode_u_64(deserializer);
     return File(path: var_path, name: var_name, size: var_size);
-  }
-
-  @protected
-  List<CompareResult> sse_decode_list_compare_result(
-      SseDeserializer deserializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-
-    var len_ = sse_decode_i_32(deserializer);
-    var ans_ = <CompareResult>[];
-    for (var idx_ = 0; idx_ < len_; ++idx_) {
-      ans_.add(sse_decode_compare_result(deserializer));
-    }
-    return ans_;
   }
 
   @protected
@@ -478,13 +441,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_StreamSink_compare_results_Sse(
-      RustStreamSink<CompareResults> self, SseSerializer serializer) {
+  void sse_encode_StreamSink_compare_result_Sse(
+      RustStreamSink<CompareResult> self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(
         self.setupAndSerialize(
             codec: SseCodec(
-          decodeSuccessData: sse_decode_compare_results,
+          decodeSuccessData: sse_decode_compare_result,
           decodeErrorData: sse_decode_AnyhowException,
         )),
         serializer);
@@ -519,13 +482,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
-  void sse_encode_compare_results(
-      CompareResults self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_list_compare_result(self.field0, serializer);
-  }
-
-  @protected
   void sse_encode_event(Event self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.eventType, serializer);
@@ -538,16 +494,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_String(self.path, serializer);
     sse_encode_String(self.name, serializer);
     sse_encode_u_64(self.size, serializer);
-  }
-
-  @protected
-  void sse_encode_list_compare_result(
-      List<CompareResult> self, SseSerializer serializer) {
-    // Codec=Sse (Serialization based), see doc to use other codecs
-    sse_encode_i_32(self.length, serializer);
-    for (final item in self) {
-      sse_encode_compare_result(item, serializer);
-    }
   }
 
   @protected

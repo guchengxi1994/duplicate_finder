@@ -16,18 +16,23 @@ class ScannerScreen extends ConsumerStatefulWidget {
 }
 
 class _ScannerScreenState extends ConsumerState<ScannerScreen> {
-  final stream = scannerCompareResultsStream();
   final eStream = eventStream();
+  final rStream = scannerRefreshResultsStream();
 
   @override
   void initState() {
     super.initState();
-    stream.listen((event) {
-      ref.read(scannerNotifierProvider.notifier).changeItems(event);
-    });
 
     eStream.listen((event) {
       ref.read(scannerNotifierProvider.notifier).changeStage(event.data);
+
+      if (event.data == "done") {
+        ref.read(scannerNotifierProvider.notifier).done();
+      }
+    });
+
+    rStream.listen((event) {
+      ref.read(scannerNotifierProvider.notifier).addItem(event);
     });
   }
 
@@ -58,9 +63,13 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                     width: 20,
                   ),
                   ElevatedButton(
-                      onPressed: () async {
-                        ref.read(scannerNotifierProvider.notifier).startScan();
-                      },
+                      onPressed: state.scanning
+                          ? null
+                          : () async {
+                              ref
+                                  .read(scannerNotifierProvider.notifier)
+                                  .startScan();
+                            },
                       child: const Text("Select folder"))
                 ],
               ),
@@ -109,14 +118,18 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
   List<DataColumn> _getColumns() {
     final asc = ref.watch(scannerNotifierProvider.select((v) => v.asc));
     final showAll = ref.watch(scannerNotifierProvider.select((v) => v.showAll));
+    final scanning =
+        ref.watch(scannerNotifierProvider.select((v) => v.scanning));
 
     return [
       DataColumn2(
           fixedWidth: 150,
           label: InkWell(
-            onTap: () {
-              ref.read(scannerNotifierProvider.notifier).refreshList();
-            },
+            onTap: scanning
+                ? null
+                : () {
+                    ref.read(scannerNotifierProvider.notifier).refreshList();
+                  },
             child: const Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Row(
@@ -131,9 +144,11 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
       DataColumn2(
           fixedWidth: 150,
           label: InkWell(
-            onTap: () {
-              ref.read(scannerNotifierProvider.notifier).changeAsc();
-            },
+            onTap: scanning
+                ? null
+                : () {
+                    ref.read(scannerNotifierProvider.notifier).changeAsc();
+                  },
             child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -157,11 +172,13 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   const Spacer(),
                   InkWell(
-                    onTap: () {
-                      ref
-                          .read(scannerNotifierProvider.notifier)
-                          .changeShowAll();
-                    },
+                    onTap: scanning
+                        ? null
+                        : () {
+                            ref
+                                .read(scannerNotifierProvider.notifier)
+                                .changeShowAll();
+                          },
                     child: showAll
                         ? const Icon(Icons.visibility)
                         : const Icon(Icons.visibility_off),

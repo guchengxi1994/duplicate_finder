@@ -37,21 +37,3 @@ class CompareResult {
           allSameFiles == other.allSameFiles &&
           count == other.count;
 }
-
-class CompareResults {
-  final List<CompareResult> field0;
-
-  const CompareResults({
-    required this.field0,
-  });
-
-  @override
-  int get hashCode => field0.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is CompareResults &&
-          runtimeType == other.runtimeType &&
-          field0 == other.field0;
-}

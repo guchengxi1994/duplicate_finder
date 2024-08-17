@@ -6,7 +6,7 @@ use std::{
 use walkdir::WalkDir;
 
 use super::{
-    compare_result::{CompareResult, SCANNER_COMPARE_RESULTS_SINK},
+    compare_result::CompareResult,
     event::{Event, EVENT_SINK},
     file::{File, GLOBAL_FILESET},
     interface::Scanner,
@@ -73,19 +73,21 @@ impl Scanner for LocalScanner {
 
         let compare_result = CompareResult::from_set(fileset.clone());
 
-        match SCANNER_COMPARE_RESULTS_SINK.try_read() {
-            Ok(s) => match s.as_ref() {
-                Some(s0) => {
-                    let _ = s0.add(compare_result);
-                }
-                None => {
-                    println!("[rust-error] Stream is None");
-                }
-            },
-            Err(_) => {
-                println!("[rust-error] Stream read error");
-            }
-        }
+        // match SCANNER_COMPARE_RESULTS_SINK.try_read() {
+        //     Ok(s) => match s.as_ref() {
+        //         Some(s0) => {
+        //             let _ = s0.add(compare_result.clone());
+        //         }
+        //         None => {
+        //             println!("[rust-error] Stream is None");
+        //         }
+        //     },
+        //     Err(_) => {
+        //         println!("[rust-error] Stream read error");
+        //     }
+        // }
+
+        compare_result.refresh();
 
         send_event("LocalScanner".to_string(), "done".to_string());
 

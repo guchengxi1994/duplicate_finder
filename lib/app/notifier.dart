@@ -12,7 +12,12 @@ class ScannerNotifier extends Notifier<ScannerState> {
   }
 
   refresh() {
-    state = state.copyWith(compareResults: null, rows: 0, stage: "", path: "");
+    state = state.copyWith(
+        compareResults: [], rows: 0, stage: "", path: "", scanning: false);
+  }
+
+  done() {
+    state = state.copyWith(scanning: false);
   }
 
   startScan() async {
@@ -22,15 +27,11 @@ class ScannerNotifier extends Notifier<ScannerState> {
       return;
     }
 
-    state = state.copyWith(path: directoryPath);
+    state = state.copyWith(path: directoryPath, scanning: true);
     scan(p: directoryPath);
   }
 
   changeAsc() {
-    if (state.compareResults == null) {
-      return;
-    }
-
     bool b = !state.asc;
     if (b) {
       state = state.copyWith(
@@ -46,10 +47,6 @@ class ScannerNotifier extends Notifier<ScannerState> {
   }
 
   refreshList() {
-    if (state.compareResults == null) {
-      return;
-    }
-
     state = state.copyWith(
         asc: true,
         results: state.results..sort((a, b) => a.index.compareTo(b.index)));
@@ -59,8 +56,7 @@ class ScannerNotifier extends Notifier<ScannerState> {
     bool b = !state.showAll;
 
     if (b) {
-      state = state.copyWith(
-          results: state.compareResults?.field0 ?? [], showAll: b);
+      state = state.copyWith(results: state.compareResults, showAll: b);
       return;
     } else {
       state = state.copyWith(
@@ -80,8 +76,17 @@ class ScannerNotifier extends Notifier<ScannerState> {
     state = state.copyWith(stage: s);
   }
 
-  changeItems(CompareResults results) {
-    state = state.copyWith(compareResults: results, results: results.field0);
+  @Deprecated("unused")
+  changeItems(List<CompareResult> results) {
+    state = state.copyWith(compareResults: results, results: results);
+  }
+
+  addItem(CompareResult result) {
+    state = state.copyWith(
+        compareResults: [...state.compareResults, result],
+        results: [...state.compareResults, result],
+        showAll: true,
+        asc: true);
   }
 }
 
