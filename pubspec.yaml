@@ -9,6 +9,7 @@ environment:
 
 dependencies:
   animated_text_kit: ^4.2.2
+  auto_size_text: ^3.0.0
   cupertino_icons: ^1.0.8
   data_table_2: ^2.5.15
   file_selector: ^1.0.3
@@ -22,6 +23,7 @@ dependencies:
   riverpod: ^2.5.1
   rust_lib_duplicate_finder:
     path: rust_builder
+  toastification: ^2.1.0
   window_manager: ^0.4.0
 
 dev_dependencies:
