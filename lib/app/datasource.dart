@@ -9,7 +9,9 @@ import 'package:flutter/material.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'notifier.dart';
 import 'toast_utils.dart';
 
 class ScannerDatasource extends DataTableSource {
@@ -59,6 +61,7 @@ class ScannerDatasource extends DataTableSource {
                             .mapIndexed((i, v) => DatasourceItem(
                                   index: i + 1,
                                   file: v,
+                                  id: result.index,
                                 ))
                             .toList(),
                       ),
@@ -110,16 +113,18 @@ const colorizeTextStyle = TextStyle(
   fontFamily: 'Horizon',
 );
 
-class DatasourceItem extends StatefulWidget {
-  const DatasourceItem({super.key, required this.file, required this.index});
+class DatasourceItem extends ConsumerStatefulWidget {
+  const DatasourceItem(
+      {super.key, required this.file, required this.index, required this.id});
   final File file;
   final int index;
+  final BigInt id;
 
   @override
-  State<DatasourceItem> createState() => _DatasourceItemState();
+  ConsumerState<DatasourceItem> createState() => _DatasourceItemState();
 }
 
-class _DatasourceItemState extends State<DatasourceItem> {
+class _DatasourceItemState extends ConsumerState<DatasourceItem> {
   bool isHover = false;
 
   @override
@@ -159,7 +164,9 @@ class _DatasourceItemState extends State<DatasourceItem> {
                     onTap: () {
                       openFile(s: widget.file.path);
                     },
-                    child: const Icon(Icons.file_open_outlined),
+                    child: const Tooltip(
+                        message: "Open in directory",
+                        child: Icon(Icons.file_open_outlined)),
                   ),
                 const SizedBox(
                   width: 10,
@@ -167,17 +174,21 @@ class _DatasourceItemState extends State<DatasourceItem> {
                 if (isHover)
                   InkWell(
                     onTap: () {
-                      /// TODO 1.1.1
-                      /// remove item from list
                       removeFile(s: widget.file.path).then((value) {
                         if (value.success) {
                           ToastUtils.sucess(null, title: value.message);
+                          ref
+                              .read(scannerNotifierProvider.notifier)
+                              .removeFileFromList(widget.id, widget.file);
                         } else {
                           ToastUtils.error(null, title: value.message);
                         }
                       });
                     },
-                    child: const Icon(Icons.highlight_remove),
+                    child: const Tooltip(
+                      message: "Move to trash bin",
+                      child: Icon(Icons.highlight_remove),
+                    ),
                   )
               ],
             ),
