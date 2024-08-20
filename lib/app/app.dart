@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:toastification/toastification.dart';
 
 import 'scanner_screen.dart';
 
@@ -9,9 +10,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const ProviderScope(
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: ScannerScreen(),
+      child: ToastificationWrapper(
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: ScannerScreen(),
+        ),
       ),
     );
   }

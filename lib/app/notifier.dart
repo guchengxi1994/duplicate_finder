@@ -1,5 +1,6 @@
 import 'package:duplicate_finder/src/rust/api/scanner_api.dart';
 import 'package:duplicate_finder/src/rust/scanner/compare_result.dart';
+import 'package:duplicate_finder/src/rust/scanner/file.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -87,6 +88,35 @@ class ScannerNotifier extends Notifier<ScannerState> {
         results: [...state.compareResults, result],
         showAll: true,
         asc: true);
+  }
+
+  updateCompareResult(CompareResult result) {
+    state = state.copyWith(
+        compareResults: state.compareResults
+            .map((e) => e.index == result.index ? result : e)
+            .toList(),
+        results: state.results
+            .map((e) => e.index == result.index ? result : e)
+            .toList());
+  }
+
+  removeFileFromList(BigInt resultId, File s) {
+    final result = state.compareResults.firstWhere((e) => e.index == resultId);
+
+    final c = CompareResult(
+        index: result.index,
+        fileSize: result.fileSize,
+        allSameFiles: result.allSameFiles
+            .map((v) => v.where((e) => e.path != s.path).toList())
+            .toList(),
+        count: result.count);
+
+    state = state.copyWith(
+        compareResults: state.compareResults
+            .map((e) => e.index == resultId ? c : e)
+            .toList(),
+        results:
+            state.results.map((e) => e.index == resultId ? c : e).toList());
   }
 }
 
