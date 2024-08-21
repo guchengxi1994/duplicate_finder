@@ -110,8 +110,12 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     }
 
     return PaginatedDataTable2(
-        columns: columns, source: ScannerDatasource(context, results));
+        controller: paginatorController,
+        columns: columns,
+        source: ScannerDatasource(context, results));
   }
+
+  final PaginatorController paginatorController = PaginatorController();
 
   List<DataColumn> get columns => _getColumns();
 
@@ -178,6 +182,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                             ref
                                 .read(scannerNotifierProvider.notifier)
                                 .changeShowAll();
+                            paginatorController.goToFirstPage();
                           },
                     child: showAll
                         ? const Icon(Icons.visibility)

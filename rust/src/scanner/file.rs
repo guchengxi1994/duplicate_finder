@@ -53,7 +53,7 @@ impl File {
     }
 
     pub fn get_file_hash(&self) -> anyhow::Result<String> {
-        let mut buffer = vec![0; 1024 * 1024];
+        let mut buffer = vec![0; 1024];
         let mut file = std::fs::File::open(&self.path)?;
         let _ = std::io::Read::read(&mut file, &mut buffer)?;
         // buffer.truncate(bytes_read);

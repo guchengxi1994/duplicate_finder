@@ -4,6 +4,11 @@ a simple tool to find duplicated files
 
 ## changelog
 
+* 1.1.1+1 (unreleased):
+  * add some callbacks
+  * performance improvement
+  * add `PaginatorController`
+
 * 1.1.1: 
   * remove item from list when remove button clicked
 
