@@ -4,7 +4,7 @@ use crate::{
     frb_generated::StreamSink,
     scanner::{
         compare_result::{CompareResult, SCANNER_REFRESH_RESULTS_SINK},
-        event::{Event, EVENT_SINK},
+        event::{ResEvent, EVENT_SINK},
         interface::Scanner,
         local::LocalScanner,
     },
@@ -25,7 +25,7 @@ pub fn scanner_refresh_results_stream(s: StreamSink<CompareResult>) -> anyhow::R
 }
 
 #[frb(sync)]
-pub fn event_stream(s: StreamSink<Event>) -> anyhow::Result<()> {
+pub fn event_stream(s: StreamSink<ResEvent>) -> anyhow::Result<()> {
     let mut stream = EVENT_SINK.write().unwrap();
     *stream = Some(s);
     anyhow::Ok(())
@@ -52,4 +52,9 @@ pub fn scan(p: String) {
             }
         }
     });
+}
+
+#[frb(sync)]
+pub fn event_to_string(s: ResEvent) -> String {
+    s.to_string()
 }

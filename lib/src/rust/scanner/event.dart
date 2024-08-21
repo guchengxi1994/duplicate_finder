@@ -5,24 +5,86 @@
 
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
+import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
+part 'event.freezed.dart';
 
-class Event {
+class CompareEvent {
   final String eventType;
-  final String data;
+  final double duration;
 
-  const Event({
+  const CompareEvent({
     required this.eventType,
-    required this.data,
+    required this.duration,
   });
 
   @override
-  int get hashCode => eventType.hashCode ^ data.hashCode;
+  int get hashCode => eventType.hashCode ^ duration.hashCode;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Event &&
+      other is CompareEvent &&
           runtimeType == other.runtimeType &&
           eventType == other.eventType &&
-          data == other.data;
+          duration == other.duration;
+}
+
+class DoneEvent {
+  final String eventType;
+  final bool isDone;
+
+  const DoneEvent({
+    required this.eventType,
+    required this.isDone,
+  });
+
+  @override
+  int get hashCode => eventType.hashCode ^ isDone.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DoneEvent &&
+          runtimeType == other.runtimeType &&
+          eventType == other.eventType &&
+          isDone == other.isDone;
+}
+
+@freezed
+sealed class ResEvent with _$ResEvent {
+  const ResEvent._();
+
+  const factory ResEvent.scannerEvent(
+    ScannerEvent field0,
+  ) = ResEvent_ScannerEvent;
+  const factory ResEvent.compareEvent(
+    CompareEvent field0,
+  ) = ResEvent_CompareEvent;
+  const factory ResEvent.doneEvent(
+    DoneEvent field0,
+  ) = ResEvent_DoneEvent;
+}
+
+class ScannerEvent {
+  final String eventType;
+  final BigInt count;
+  final double duration;
+
+  const ScannerEvent({
+    required this.eventType,
+    required this.count,
+    required this.duration,
+  });
+
+  @override
+  int get hashCode => eventType.hashCode ^ count.hashCode ^ duration.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ScannerEvent &&
+          runtimeType == other.runtimeType &&
+          eventType == other.eventType &&
+          count == other.count &&
+          duration == other.duration;
 }

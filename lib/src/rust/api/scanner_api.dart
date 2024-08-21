@@ -12,8 +12,11 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 Stream<CompareResult> scannerRefreshResultsStream() =>
     RustLib.instance.api.crateApiScannerApiScannerRefreshResultsStream();
 
-Stream<Event> eventStream() =>
+Stream<ResEvent> eventStream() =>
     RustLib.instance.api.crateApiScannerApiEventStream();
 
 Future<void> scan({required String p}) =>
     RustLib.instance.api.crateApiScannerApiScan(p: p);
+
+String eventToString({required ResEvent s}) =>
+    RustLib.instance.api.crateApiScannerApiEventToString(s: s);

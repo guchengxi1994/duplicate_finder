@@ -24,11 +24,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     super.initState();
 
     eStream.listen((event) {
-      ref.read(scannerNotifierProvider.notifier).changeStage(event.data);
-
-      if (event.data == "done") {
-        ref.read(scannerNotifierProvider.notifier).done();
-      }
+      ref.read(scannerNotifierProvider.notifier).changeStage(event);
     });
 
     rStream.listen((event) {

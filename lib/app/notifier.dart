@@ -1,5 +1,6 @@
 import 'package:duplicate_finder/src/rust/api/scanner_api.dart';
 import 'package:duplicate_finder/src/rust/scanner/compare_result.dart';
+import 'package:duplicate_finder/src/rust/scanner/event.dart';
 import 'package:duplicate_finder/src/rust/scanner/file.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,7 +29,8 @@ class ScannerNotifier extends Notifier<ScannerState> {
       return;
     }
 
-    state = state.copyWith(path: directoryPath, scanning: true);
+    state = state.copyWith(
+        path: directoryPath, scanning: true, compareResults: [], results: []);
     scan(p: directoryPath);
   }
 
@@ -73,13 +75,18 @@ class ScannerNotifier extends Notifier<ScannerState> {
     }
   }
 
-  changeStage(String s) {
-    state = state.copyWith(stage: s);
-  }
+  changeStage(ResEvent s) {
+    final v = switch (s) {
+      ResEvent_ScannerEvent() => eventToString(s: s),
+      ResEvent_CompareEvent() => "${state.stage};${eventToString(s: s)}",
+      ResEvent_DoneEvent() => "Done",
+    };
 
-  @Deprecated("unused")
-  changeItems(List<CompareResult> results) {
-    state = state.copyWith(compareResults: results, results: results);
+    if (v == "Done") {
+      done();
+    } else {
+      state = state.copyWith(stage: v);
+    }
   }
 
   addItem(CompareResult result) {

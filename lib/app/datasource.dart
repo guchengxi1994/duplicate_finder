@@ -57,6 +57,7 @@ class ScannerDatasource extends DataTableSource {
                           borderRadius: BorderRadius.circular(10)),
                       height: result.allSameFiles[i].length * 50,
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: result.allSameFiles[i]
                             .mapIndexed((i, v) => DatasourceItem(
                                   index: i + 1,
@@ -161,6 +162,9 @@ class _DatasourceItemState extends ConsumerState<DatasourceItem> {
             height: 50,
             child: Row(
               children: [
+                const SizedBox(
+                  width: 10,
+                ),
                 Expanded(
                     child: Tooltip(
                   waitDuration: const Duration(seconds: 1),

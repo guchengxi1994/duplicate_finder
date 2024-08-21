@@ -4,6 +4,9 @@ a simple tool to find duplicated files
 
 ## changelog
 
+* 1.2.0:
+  * refactor rust `Event`
+
 * 1.1.1+1 (unreleased):
   * add some callbacks
   * performance improvement

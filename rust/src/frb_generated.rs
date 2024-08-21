@@ -37,7 +37,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.2.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -449255708;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -430018096;
 
 // Section: executor
 
@@ -134,7 +134,7 @@ fn wire__crate__api__scanner_api__event_stream_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_s = <StreamSink<
-                crate::scanner::event::Event,
+                crate::scanner::event::ResEvent,
                 flutter_rust_bridge::for_generated::SseCodec,
             >>::sse_decode(&mut deserializer);
             deserializer.end();
@@ -144,6 +144,37 @@ fn wire__crate__api__scanner_api__event_stream_impl(
                     Ok(output_ok)
                 })(),
             )
+        },
+    )
+}
+fn wire__crate__api__scanner_api__event_to_string_impl(
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "event_to_string",
+            port: None,
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_s = <crate::scanner::event::ResEvent>::sse_decode(&mut deserializer);
+            deserializer.end();
+            transform_result_sse::<_, ()>((move || {
+                let output_ok =
+                    Result::<_, ()>::Ok(crate::api::scanner_api::event_to_string(api_s))?;
+                Ok(output_ok)
+            })())
         },
     )
 }
@@ -374,7 +405,7 @@ impl SseDecode
 }
 
 impl SseDecode
-    for StreamSink<crate::scanner::event::Event, flutter_rust_bridge::for_generated::SseCodec>
+    for StreamSink<crate::scanner::event::ResEvent, flutter_rust_bridge::for_generated::SseCodec>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -398,6 +429,18 @@ impl SseDecode for bool {
     }
 }
 
+impl SseDecode for crate::scanner::event::CompareEvent {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_eventType = <String>::sse_decode(deserializer);
+        let mut var_duration = <f32>::sse_decode(deserializer);
+        return crate::scanner::event::CompareEvent {
+            event_type: var_eventType,
+            duration: var_duration,
+        };
+    }
+}
+
 impl SseDecode for crate::scanner::compare_result::CompareResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -414,15 +457,22 @@ impl SseDecode for crate::scanner::compare_result::CompareResult {
     }
 }
 
-impl SseDecode for crate::scanner::event::Event {
+impl SseDecode for crate::scanner::event::DoneEvent {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_eventType = <String>::sse_decode(deserializer);
-        let mut var_data = <String>::sse_decode(deserializer);
-        return crate::scanner::event::Event {
+        let mut var_isDone = <bool>::sse_decode(deserializer);
+        return crate::scanner::event::DoneEvent {
             event_type: var_eventType,
-            data: var_data,
+            is_done: var_isDone,
         };
+    }
+}
+
+impl SseDecode for f32 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_f32::<NativeEndian>().unwrap()
     }
 }
 
@@ -488,6 +538,46 @@ impl SseDecode for crate::api::public::OperationResult {
     }
 }
 
+impl SseDecode for crate::scanner::event::ResEvent {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut tag_ = <i32>::sse_decode(deserializer);
+        match tag_ {
+            0 => {
+                let mut var_field0 =
+                    <crate::scanner::event::ScannerEvent>::sse_decode(deserializer);
+                return crate::scanner::event::ResEvent::ScannerEvent(var_field0);
+            }
+            1 => {
+                let mut var_field0 =
+                    <crate::scanner::event::CompareEvent>::sse_decode(deserializer);
+                return crate::scanner::event::ResEvent::CompareEvent(var_field0);
+            }
+            2 => {
+                let mut var_field0 = <crate::scanner::event::DoneEvent>::sse_decode(deserializer);
+                return crate::scanner::event::ResEvent::DoneEvent(var_field0);
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+
+impl SseDecode for crate::scanner::event::ScannerEvent {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_eventType = <String>::sse_decode(deserializer);
+        let mut var_count = <u64>::sse_decode(deserializer);
+        let mut var_duration = <f32>::sse_decode(deserializer);
+        return crate::scanner::event::ScannerEvent {
+            event_type: var_eventType,
+            count: var_count,
+            duration: var_duration,
+        };
+    }
+}
+
 impl SseDecode for u64 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -535,10 +625,10 @@ fn pde_ffi_dispatcher_primary_impl(
             rust_vec_len,
             data_len,
         ),
-        4 => wire__crate__api__scanner_api__scan_impl(port, ptr, rust_vec_len, data_len),
-        7 => wire__crate__api__simple__init_app_impl(port, ptr, rust_vec_len, data_len),
-        8 => wire__crate__api__tools_api__open_file_impl(port, ptr, rust_vec_len, data_len),
-        9 => wire__crate__api__tools_api__remove_file_impl(port, ptr, rust_vec_len, data_len),
+        5 => wire__crate__api__scanner_api__scan_impl(port, ptr, rust_vec_len, data_len),
+        8 => wire__crate__api__simple__init_app_impl(port, ptr, rust_vec_len, data_len),
+        9 => wire__crate__api__tools_api__open_file_impl(port, ptr, rust_vec_len, data_len),
+        10 => wire__crate__api__tools_api__remove_file_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -552,18 +642,40 @@ fn pde_ffi_dispatcher_sync_impl(
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
         3 => wire__crate__api__scanner_api__event_stream_impl(ptr, rust_vec_len, data_len),
-        5 => wire__crate__api__scanner_api__scanner_refresh_results_stream_impl(
+        4 => wire__crate__api__scanner_api__event_to_string_impl(ptr, rust_vec_len, data_len),
+        6 => wire__crate__api__scanner_api__scanner_refresh_results_stream_impl(
             ptr,
             rust_vec_len,
             data_len,
         ),
-        6 => wire__crate__api__simple__greet_impl(ptr, rust_vec_len, data_len),
+        7 => wire__crate__api__simple__greet_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
 
 // Section: rust2dart
 
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::scanner::event::CompareEvent {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.event_type.into_into_dart().into_dart(),
+            self.duration.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::scanner::event::CompareEvent
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::scanner::event::CompareEvent>
+    for crate::scanner::event::CompareEvent
+{
+    fn into_into_dart(self) -> crate::scanner::event::CompareEvent {
+        self
+    }
+}
 // Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::scanner::compare_result::CompareResult {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
@@ -588,20 +700,23 @@ impl flutter_rust_bridge::IntoIntoDart<crate::scanner::compare_result::CompareRe
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
-impl flutter_rust_bridge::IntoDart for crate::scanner::event::Event {
+impl flutter_rust_bridge::IntoDart for crate::scanner::event::DoneEvent {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
             self.event_type.into_into_dart().into_dart(),
-            self.data.into_into_dart().into_dart(),
+            self.is_done.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
 }
-impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::scanner::event::Event {}
-impl flutter_rust_bridge::IntoIntoDart<crate::scanner::event::Event>
-    for crate::scanner::event::Event
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::scanner::event::DoneEvent
 {
-    fn into_into_dart(self) -> crate::scanner::event::Event {
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::scanner::event::DoneEvent>
+    for crate::scanner::event::DoneEvent
+{
+    fn into_into_dart(self) -> crate::scanner::event::DoneEvent {
         self
     }
 }
@@ -643,6 +758,58 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api::public::OperationResult>
         self
     }
 }
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::scanner::event::ResEvent {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            crate::scanner::event::ResEvent::ScannerEvent(field0) => {
+                [0.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::scanner::event::ResEvent::CompareEvent(field0) => {
+                [1.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::scanner::event::ResEvent::DoneEvent(field0) => {
+                [2.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::scanner::event::ResEvent
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::scanner::event::ResEvent>
+    for crate::scanner::event::ResEvent
+{
+    fn into_into_dart(self) -> crate::scanner::event::ResEvent {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::scanner::event::ScannerEvent {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.event_type.into_into_dart().into_dart(),
+            self.count.into_into_dart().into_dart(),
+            self.duration.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::scanner::event::ScannerEvent
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::scanner::event::ScannerEvent>
+    for crate::scanner::event::ScannerEvent
+{
+    fn into_into_dart(self) -> crate::scanner::event::ScannerEvent {
+        self
+    }
+}
 
 impl SseEncode for flutter_rust_bridge::for_generated::anyhow::Error {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -664,7 +831,7 @@ impl SseEncode
 }
 
 impl SseEncode
-    for StreamSink<crate::scanner::event::Event, flutter_rust_bridge::for_generated::SseCodec>
+    for StreamSink<crate::scanner::event::ResEvent, flutter_rust_bridge::for_generated::SseCodec>
 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -686,6 +853,14 @@ impl SseEncode for bool {
     }
 }
 
+impl SseEncode for crate::scanner::event::CompareEvent {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.event_type, serializer);
+        <f32>::sse_encode(self.duration, serializer);
+    }
+}
+
 impl SseEncode for crate::scanner::compare_result::CompareResult {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -696,11 +871,18 @@ impl SseEncode for crate::scanner::compare_result::CompareResult {
     }
 }
 
-impl SseEncode for crate::scanner::event::Event {
+impl SseEncode for crate::scanner::event::DoneEvent {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <String>::sse_encode(self.event_type, serializer);
-        <String>::sse_encode(self.data, serializer);
+        <bool>::sse_encode(self.is_done, serializer);
+    }
+}
+
+impl SseEncode for f32 {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer.cursor.write_f32::<NativeEndian>(self).unwrap();
     }
 }
 
@@ -748,6 +930,38 @@ impl SseEncode for crate::api::public::OperationResult {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <bool>::sse_encode(self.success, serializer);
         <String>::sse_encode(self.message, serializer);
+    }
+}
+
+impl SseEncode for crate::scanner::event::ResEvent {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        match self {
+            crate::scanner::event::ResEvent::ScannerEvent(field0) => {
+                <i32>::sse_encode(0, serializer);
+                <crate::scanner::event::ScannerEvent>::sse_encode(field0, serializer);
+            }
+            crate::scanner::event::ResEvent::CompareEvent(field0) => {
+                <i32>::sse_encode(1, serializer);
+                <crate::scanner::event::CompareEvent>::sse_encode(field0, serializer);
+            }
+            crate::scanner::event::ResEvent::DoneEvent(field0) => {
+                <i32>::sse_encode(2, serializer);
+                <crate::scanner::event::DoneEvent>::sse_encode(field0, serializer);
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+
+impl SseEncode for crate::scanner::event::ScannerEvent {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.event_type, serializer);
+        <u64>::sse_encode(self.count, serializer);
+        <f32>::sse_encode(self.duration, serializer);
     }
 }
 
