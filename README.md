@@ -4,7 +4,10 @@ a simple tool to find duplicated files
 
 ## changelog
 
-* 1.2.0:
+* 1.2.1 (unreleased):
+  * hash function changed
+
+* 1.2.0 (unreleased):
   * refactor rust `Event`
 
 * 1.1.1+1 (unreleased):
