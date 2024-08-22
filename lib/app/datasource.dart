@@ -57,11 +57,13 @@ class ScannerDatasource extends DataTableSource {
                           borderRadius: BorderRadius.circular(10)),
                       height: result.allSameFiles[i].length * 50,
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: result.allSameFiles[i]
                             .mapIndexed((i, v) => DatasourceItem(
                                   index: i + 1,
                                   file: v,
                                   id: result.index,
+                                  onFileRemoved: (file) {},
                                 ))
                             .toList(),
                       ),
@@ -113,12 +115,25 @@ const colorizeTextStyle = TextStyle(
   fontFamily: 'Horizon',
 );
 
+typedef OnFileRemoved = void Function(File file);
+typedef OnFileDeleted = void Function(File file);
+typedef OnFileOpened = void Function(String path);
+
 class DatasourceItem extends ConsumerStatefulWidget {
   const DatasourceItem(
-      {super.key, required this.file, required this.index, required this.id});
+      {super.key,
+      required this.file,
+      required this.index,
+      required this.id,
+      this.onFileOpened,
+      this.onFileDeleted,
+      this.onFileRemoved});
   final File file;
   final int index;
   final BigInt id;
+  final OnFileDeleted? onFileDeleted;
+  final OnFileRemoved? onFileRemoved;
+  final OnFileOpened? onFileOpened;
 
   @override
   ConsumerState<DatasourceItem> createState() => _DatasourceItemState();
@@ -147,6 +162,9 @@ class _DatasourceItemState extends ConsumerState<DatasourceItem> {
             height: 50,
             child: Row(
               children: [
+                const SizedBox(
+                  width: 10,
+                ),
                 Expanded(
                     child: Tooltip(
                   waitDuration: const Duration(seconds: 1),
@@ -163,6 +181,9 @@ class _DatasourceItemState extends ConsumerState<DatasourceItem> {
                   InkWell(
                     onTap: () {
                       openFile(s: widget.file.path);
+                      if (widget.onFileOpened != null) {
+                        widget.onFileOpened!(widget.file.path);
+                      }
                     },
                     child: const Tooltip(
                         message: "Open in directory",
@@ -180,6 +201,9 @@ class _DatasourceItemState extends ConsumerState<DatasourceItem> {
                           ref
                               .read(scannerNotifierProvider.notifier)
                               .removeFileFromList(widget.id, widget.file);
+                          if (widget.onFileRemoved != null) {
+                            widget.onFileRemoved!(widget.file);
+                          }
                         } else {
                           ToastUtils.error(null, title: value.message);
                         }

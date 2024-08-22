@@ -7,12 +7,14 @@ use std::sync::RwLock;
 
 use levenshtein::levenshtein;
 use once_cell::sync::Lazy;
+use serde::Deserialize;
+use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
 
 use super::difference::Difference;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct File {
     pub path: String,
     pub name: String,
@@ -53,7 +55,11 @@ impl File {
     }
 
     pub fn get_file_hash(&self) -> anyhow::Result<String> {
-        let mut buffer = vec![0; 1024 * 1024];
+        if self.size == 0 {
+            return Ok("".to_string());
+        }
+
+        let mut buffer = vec![0; 1024];
         let mut file = std::fs::File::open(&self.path)?;
         let _ = std::io::Read::read(&mut file, &mut buffer)?;
         // buffer.truncate(bytes_read);
@@ -64,6 +70,10 @@ impl File {
     }
 
     pub fn get_full_hash(&self) -> anyhow::Result<String> {
+        if self.size == 0 {
+            return Ok("".to_string());
+        }
+
         let mut buffer = vec![0; 1024 * 1024];
         let mut file = std::fs::File::open(&self.path)?;
         let mut hasher = Sha256::new();
@@ -89,22 +99,33 @@ impl File {
     }
 
     pub fn compare_hash(&self, other: &File) -> bool {
-        if let Ok(hash1) = self.get_file_hash() {
-            if let Ok(hash2) = other.get_file_hash() {
-                // return hash1 == hash2;
-                if hash1 == hash2 {
-                    if let Ok(hash_full1) = self.get_full_hash() {
-                        if let Ok(hash_full2) = other.get_full_hash() {
-                            return hash_full1 == hash_full2;
-                        }
-                    }
-                }
+        let self_simple_hash =
+            self.get_or_insert_hash(&GLOBAL_FILE_HASH, |file| file.get_file_hash());
+        let other_simple_hash =
+            other.get_or_insert_hash(&GLOBAL_FILE_HASH, |file| file.get_file_hash());
 
-                return false;
-            }
+        if self_simple_hash != other_simple_hash {
+            return false;
         }
 
-        false
+        let self_full_hash =
+            self.get_or_insert_hash(&GLOBAL_FILE_FULL_HASH, |file| file.get_full_hash());
+        let other_full_hash =
+            other.get_or_insert_hash(&GLOBAL_FILE_FULL_HASH, |file| file.get_full_hash());
+
+        self_full_hash == other_full_hash
+    }
+
+    fn get_or_insert_hash<F>(&self, map: &RwLock<HashMap<String, String>>, hash_fn: F) -> String
+    where
+        F: Fn(&File) -> anyhow::Result<String>,
+    {
+        let key = self.path.clone();
+        let mut binding = map.write().unwrap();
+        binding
+            .entry(key.clone())
+            .or_insert_with(|| hash_fn(self).unwrap_or_default())
+            .clone()
     }
 
     pub fn fuzzy_compare(&self, other: &File) -> Difference {
@@ -123,7 +144,15 @@ impl Eq for File {}
 
 impl PartialEq for File {
     fn eq(&self, other: &Self) -> bool {
-        self.size == other.size && self.compare_hash(other)
+        if self.size == 0 && other.size == 0 {
+            return true;
+        }
+
+        if self.size != other.size {
+            return false;
+        }
+
+        self.compare_hash(other)
     }
 }
 
@@ -151,3 +180,9 @@ impl FileSet {
 }
 
 pub static GLOBAL_FILESET: Lazy<RwLock<FileSet>> = Lazy::new(|| RwLock::new(FileSet::new()));
+
+pub static GLOBAL_FILE_HASH: Lazy<RwLock<HashMap<String, String>>> =
+    Lazy::new(|| RwLock::new(HashMap::new()));
+
+pub static GLOBAL_FILE_FULL_HASH: Lazy<RwLock<HashMap<String, String>>> =
+    Lazy::new(|| RwLock::new(HashMap::new()));

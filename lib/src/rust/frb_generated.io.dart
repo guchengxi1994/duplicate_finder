@@ -32,7 +32,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       dynamic raw);
 
   @protected
-  RustStreamSink<Event> dco_decode_StreamSink_event_Sse(dynamic raw);
+  RustStreamSink<ResEvent> dco_decode_StreamSink_res_event_Sse(dynamic raw);
 
   @protected
   String dco_decode_String(dynamic raw);
@@ -41,10 +41,28 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool dco_decode_bool(dynamic raw);
 
   @protected
+  CompareEvent dco_decode_box_autoadd_compare_event(dynamic raw);
+
+  @protected
+  DoneEvent dco_decode_box_autoadd_done_event(dynamic raw);
+
+  @protected
+  ResEvent dco_decode_box_autoadd_res_event(dynamic raw);
+
+  @protected
+  ScannerEvent dco_decode_box_autoadd_scanner_event(dynamic raw);
+
+  @protected
+  CompareEvent dco_decode_compare_event(dynamic raw);
+
+  @protected
   CompareResult dco_decode_compare_result(dynamic raw);
 
   @protected
-  Event dco_decode_event(dynamic raw);
+  DoneEvent dco_decode_done_event(dynamic raw);
+
+  @protected
+  double dco_decode_f_32(dynamic raw);
 
   @protected
   File dco_decode_file(dynamic raw);
@@ -60,6 +78,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   OperationResult dco_decode_operation_result(dynamic raw);
+
+  @protected
+  ResEvent dco_decode_res_event(dynamic raw);
+
+  @protected
+  ScannerEvent dco_decode_scanner_event(dynamic raw);
 
   @protected
   BigInt dco_decode_u_64(dynamic raw);
@@ -78,7 +102,7 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       SseDeserializer deserializer);
 
   @protected
-  RustStreamSink<Event> sse_decode_StreamSink_event_Sse(
+  RustStreamSink<ResEvent> sse_decode_StreamSink_res_event_Sse(
       SseDeserializer deserializer);
 
   @protected
@@ -88,10 +112,30 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool sse_decode_bool(SseDeserializer deserializer);
 
   @protected
+  CompareEvent sse_decode_box_autoadd_compare_event(
+      SseDeserializer deserializer);
+
+  @protected
+  DoneEvent sse_decode_box_autoadd_done_event(SseDeserializer deserializer);
+
+  @protected
+  ResEvent sse_decode_box_autoadd_res_event(SseDeserializer deserializer);
+
+  @protected
+  ScannerEvent sse_decode_box_autoadd_scanner_event(
+      SseDeserializer deserializer);
+
+  @protected
+  CompareEvent sse_decode_compare_event(SseDeserializer deserializer);
+
+  @protected
   CompareResult sse_decode_compare_result(SseDeserializer deserializer);
 
   @protected
-  Event sse_decode_event(SseDeserializer deserializer);
+  DoneEvent sse_decode_done_event(SseDeserializer deserializer);
+
+  @protected
+  double sse_decode_f_32(SseDeserializer deserializer);
 
   @protected
   File sse_decode_file(SseDeserializer deserializer);
@@ -107,6 +151,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   OperationResult sse_decode_operation_result(SseDeserializer deserializer);
+
+  @protected
+  ResEvent sse_decode_res_event(SseDeserializer deserializer);
+
+  @protected
+  ScannerEvent sse_decode_scanner_event(SseDeserializer deserializer);
 
   @protected
   BigInt sse_decode_u_64(SseDeserializer deserializer);
@@ -129,8 +179,8 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       RustStreamSink<CompareResult> self, SseSerializer serializer);
 
   @protected
-  void sse_encode_StreamSink_event_Sse(
-      RustStreamSink<Event> self, SseSerializer serializer);
+  void sse_encode_StreamSink_res_event_Sse(
+      RustStreamSink<ResEvent> self, SseSerializer serializer);
 
   @protected
   void sse_encode_String(String self, SseSerializer serializer);
@@ -139,10 +189,32 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_bool(bool self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_compare_event(
+      CompareEvent self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_done_event(
+      DoneEvent self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_res_event(
+      ResEvent self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_scanner_event(
+      ScannerEvent self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_compare_event(CompareEvent self, SseSerializer serializer);
+
+  @protected
   void sse_encode_compare_result(CompareResult self, SseSerializer serializer);
 
   @protected
-  void sse_encode_event(Event self, SseSerializer serializer);
+  void sse_encode_done_event(DoneEvent self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_f_32(double self, SseSerializer serializer);
 
   @protected
   void sse_encode_file(File self, SseSerializer serializer);
@@ -161,6 +233,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_operation_result(
       OperationResult self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_res_event(ResEvent self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_scanner_event(ScannerEvent self, SseSerializer serializer);
 
   @protected
   void sse_encode_u_64(BigInt self, SseSerializer serializer);

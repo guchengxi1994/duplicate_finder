@@ -1,8 +1,9 @@
 use super::file::{File, FileSet};
 use crate::frb_generated::StreamSink;
+use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, sync::RwLock};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CompareResult {
     pub index: u64,
     pub file_size: u64,
@@ -30,9 +31,8 @@ impl CompareResult {
 
     pub fn group_files(files: Vec<File>) -> (Vec<Vec<File>>, u64) {
         let mut map: HashMap<File, Vec<File>> = HashMap::new();
-        let mut count = 0;
+        let count = files.len() as u64;
         for file in files {
-            count += 1;
             map.entry(file.clone()).or_insert_with(Vec::new).push(file);
         }
         (map.into_values().collect(), count)
@@ -46,12 +46,32 @@ impl CompareResults {
                 let file_size = result.file_size;
                 let r = CompareResult::group_files(result.all_same_files[0].clone());
                 let grouped_files = r.0;
-                let _ = sink.add(CompareResult {
+
+                let c = CompareResult {
                     index: result.index,
                     all_same_files: grouped_files,
                     file_size,
                     count: r.1,
-                });
+                };
+                let _ = sink.add(c);
+            }
+        } else {
+            // for test
+            for result in &self.0 {
+                let file_size = result.file_size;
+                let r = CompareResult::group_files(result.all_same_files[0].clone());
+                let grouped_files = r.0;
+
+                let c = CompareResult {
+                    index: result.index,
+                    all_same_files: grouped_files,
+                    file_size,
+                    count: r.1,
+                };
+
+                if c.file_size == 0 {
+                    println!("c ==========> {}", serde_json::to_string(&c).unwrap());
+                }
             }
         }
     }

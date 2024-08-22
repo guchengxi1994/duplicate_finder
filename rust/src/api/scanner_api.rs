@@ -4,7 +4,7 @@ use crate::{
     frb_generated::StreamSink,
     scanner::{
         compare_result::{CompareResult, SCANNER_REFRESH_RESULTS_SINK},
-        event::{Event, EVENT_SINK},
+        event::{ResEvent, EVENT_SINK},
         interface::Scanner,
         local::LocalScanner,
     },
@@ -25,7 +25,7 @@ pub fn scanner_refresh_results_stream(s: StreamSink<CompareResult>) -> anyhow::R
 }
 
 #[frb(sync)]
-pub fn event_stream(s: StreamSink<Event>) -> anyhow::Result<()> {
+pub fn event_stream(s: StreamSink<ResEvent>) -> anyhow::Result<()> {
     let mut stream = EVENT_SINK.write().unwrap();
     *stream = Some(s);
     anyhow::Ok(())
@@ -35,6 +35,16 @@ pub fn scan(p: String) {
     {
         let mut file_set = crate::scanner::file::GLOBAL_FILESET.write().unwrap();
         (*file_set).clear();
+    }
+
+    {
+        let mut full_hash = crate::scanner::file::GLOBAL_FILE_FULL_HASH.write().unwrap();
+        (*full_hash).clear();
+    }
+
+    {
+        let mut file_hash = crate::scanner::file::GLOBAL_FILE_HASH.write().unwrap();
+        (*file_hash).clear();
     }
 
     let rt = tokio::runtime::Builder::new_current_thread()
@@ -52,4 +62,9 @@ pub fn scan(p: String) {
             }
         }
     });
+}
+
+#[frb(sync)]
+pub fn event_to_string(s: ResEvent) -> String {
+    s.to_string()
 }
