@@ -713,6 +713,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "7.0.0"
+  square_progress_bar:
+    dependency: "direct main"
+    description:
+      name: square_progress_bar
+      sha256: bb3b0d7425a25e28587fa513ec0493f59e587001d8808454806ccc7ee3a4c505
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.1.1"
   stack_trace:
     dependency: transitive
     description:

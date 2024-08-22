@@ -13,9 +13,18 @@ class ScannerNotifier extends Notifier<ScannerState> {
     return const ScannerState();
   }
 
+  double get progress => state.totalFileCount == 0
+      ? 0
+      : state.comparedFileCount / state.totalFileCount;
+
   refresh() {
     state = state.copyWith(
-        compareResults: [], rows: 0, stage: "", path: "", scanning: false);
+        compareResults: [],
+        stage: "",
+        path: "",
+        scanning: false,
+        totalFileCount: 0,
+        comparedFileCount: 0);
   }
 
   done() {
@@ -82,6 +91,10 @@ class ScannerNotifier extends Notifier<ScannerState> {
       ResEvent_DoneEvent() => "Done",
     };
 
+    if (s is ResEvent_ScannerEvent) {
+      state = state.copyWith(totalFileCount: s.field0.count.toInt());
+    }
+
     if (v == "Done") {
       done();
     } else {
@@ -94,7 +107,8 @@ class ScannerNotifier extends Notifier<ScannerState> {
         compareResults: [...state.compareResults, result],
         results: [...state.compareResults, result],
         showAll: true,
-        asc: true);
+        asc: true,
+        comparedFileCount: state.comparedFileCount + result.count.toInt());
   }
 
   updateCompareResult(CompareResult result) {

@@ -24,6 +24,7 @@ dependencies:
   riverpod: ^2.5.1
   rust_lib_duplicate_finder:
     path: rust_builder
+  square_progress_bar: ^1.1.1
   toastification: ^2.1.0
   window_manager: ^0.4.0
 
