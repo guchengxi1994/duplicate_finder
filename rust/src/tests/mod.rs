@@ -3,9 +3,13 @@ mod tests {
     use levenshtein::levenshtein;
     use walkdir::WalkDir;
 
-    use crate::tools::{
-        move_file_to_trash::move_file_to_trash,
-        openfile_and_highlight::open_folder_and_highlight_file,
+    use crate::{
+        api::scanner_api::scan,
+        scanner::file::{File, GLOBAL_FILESET, GLOBAL_FILE_FULL_HASH, GLOBAL_FILE_HASH},
+        tools::{
+            move_file_to_trash::move_file_to_trash,
+            openfile_and_highlight::open_folder_and_highlight_file,
+        },
     };
 
     #[test]
@@ -48,5 +52,28 @@ mod tests {
     #[test]
     fn move_file_to_trash_test() {
         let _ = move_file_to_trash(r"D:\duplicate_finder\README.md");
+    }
+
+    #[test]
+    fn test_files_is_same() {
+        let a = File::from_path(
+            r"C:\\Users\\xiaoshuyui\\Downloads\\j\\20240308111014_td86B.pdf_i.json".to_string(),
+        )
+        .unwrap();
+        let b = File::from_path(
+            r"C:\\Users\\xiaoshuyui\\Downloads\\j\\20230906173332_n2mMj.json".to_string(),
+        )
+        .unwrap();
+        println!("{}", a.compare_hash(&b));
+        println!("{}", a == b);
+
+        println!("{:?}", &GLOBAL_FILE_HASH);
+        println!("{:?}", &GLOBAL_FILE_FULL_HASH);
+    }
+
+    #[test]
+    fn scan_folder_test() {
+        scan(r"C:\Users\xiaoshuyui\Downloads\j".to_string());
+        // println!("{:?}", &GLOBAL_FILESET);
     }
 }
