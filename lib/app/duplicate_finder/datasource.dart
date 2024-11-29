@@ -12,7 +12,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'notifier.dart';
-import 'toast_utils.dart';
+import '../toast_utils.dart';
 
 class ScannerDatasource extends DataTableSource {
   final BuildContext context;

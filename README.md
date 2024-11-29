@@ -4,6 +4,12 @@ a simple tool to find duplicated files
 
 ## changelog
 
+* 2.0.0(WIP):
+  
+  * caculate folder size and draw treemap
+
+    ![image-20241129165523838](image-20241129165523838.png)
+  
 * 1.2.2:
   * add progress bar
 

@@ -4,7 +4,11 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
+import '../project.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-String greet({required String name}) =>
-    RustLib.instance.api.crateApiSimpleGreet(name: name);
+Stream<ProjectDetail> projectScanStream() =>
+    RustLib.instance.api.crateApiProjectApiProjectScanStream();
+
+Future<void> projectScan({required String p}) =>
+    RustLib.instance.api.crateApiProjectApiProjectScan(p: p);
