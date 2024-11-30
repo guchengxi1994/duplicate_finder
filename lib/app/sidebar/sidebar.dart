@@ -9,6 +9,8 @@ class Sidebar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(sidebarProvider);
+
     late final List<SidebarItem> items = [
       SidebarItem(
           icon: const Icon(
@@ -40,14 +42,14 @@ class Sidebar extends ConsumerWidget {
         elevation: 10,
         borderRadius: BorderRadius.circular(10),
         child: Container(
-          width: 40,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Column(
-            children: items.map((v) => SidebarItemWidget(item: v)).toList(),
-          ),
-        ),
+            width: state.width,
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              children: items.map((v) => SidebarItemWidget(item: v)).toList(),
+            )),
       ),
     );
   }

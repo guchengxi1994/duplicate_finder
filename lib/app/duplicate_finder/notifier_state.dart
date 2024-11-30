@@ -1,4 +1,4 @@
-import 'package:duplicate_finder/src/rust/scanner/compare_result.dart';
+import 'package:scanner/src/rust/scanner/compare_result.dart';
 
 class ScannerState {
   final String stage;

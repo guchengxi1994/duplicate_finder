@@ -15,9 +15,7 @@ pub fn project_scan_stream(s: StreamSink<ProjectDetail>) -> anyhow::Result<()> {
 pub fn project_scan(p: String) {
     let rt = tokio::runtime::Runtime::new().unwrap();
     rt.block_on(async {
-        let pv = ProjectView{
-            0: p,
-        };
+        let pv = ProjectView { 0: p };
         let r = pv.scan().await;
         match r {
             Ok(_) => {}

@@ -79,6 +79,8 @@ impl ProjectView {
             }
         }
 
+        send_detail_event("last".to_string(), 0);
+
         anyhow::Ok(())
     }
 }

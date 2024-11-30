@@ -30,7 +30,7 @@ mod tests {
 
     #[test]
     fn test_scan() {
-        let s = r"D:\github_repo\duplicate_finder";
+        let s = r"D:\github_repo\scanner";
         let mut count = 0;
         for entry in WalkDir::new(&s).into_iter().filter_map(|e| e.ok()) {
             if entry.path().is_file() {
@@ -46,12 +46,12 @@ mod tests {
 
     #[test]
     fn openfile_and_highlight_test() {
-        open_folder_and_highlight_file(r"D:\github_repo\duplicate_finder\rust\Cargo.toml")
+        open_folder_and_highlight_file(r"D:\github_repo\scanner\rust\Cargo.toml")
     }
 
     #[test]
     fn move_file_to_trash_test() {
-        let _ = move_file_to_trash(r"D:\duplicate_finder\README.md");
+        let _ = move_file_to_trash(r"D:\scanner\README.md");
     }
 
     #[test]

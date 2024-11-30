@@ -28,25 +28,41 @@ class SidebarItemWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedIndex = ref.watch(sidebarProvider);
+    final state = ref.watch(sidebarProvider);
 
     return MouseRegion(
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
           child: Tooltip(
             message: item.title,
-            child: Container(
-              margin: const EdgeInsets.only(top: 10, bottom: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                color: selectedIndex == item.index
-                    ? Colors.grey[200]
-                    : Colors.white,
+            child: ClipRect(
+              child: Container(
+                margin: const EdgeInsets.only(top: 10, bottom: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: state.index == item.index
+                      ? Colors.grey[100]
+                      : Colors.white,
+                ),
+                width: state.width - 10,
+                height: 30,
+                child: Row(
+                  children: [
+                    const SizedBox(width: 3),
+                    state.index == item.index ? item.icon : item.iconInactive,
+                    const SizedBox(width: 3),
+                    if (state.width > 75)
+                      Text(
+                        item.title,
+                        style: TextStyle(
+                          color: state.index == item.index
+                              ? Colors.blueAccent
+                              : null,
+                        ),
+                      )
+                  ],
+                ),
               ),
-              width: 30,
-              height: 30,
-              child:
-                  selectedIndex == item.index ? item.icon : item.iconInactive,
             ),
           ),
           onTap: () {

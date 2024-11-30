@@ -1,6 +1,6 @@
-import 'package:duplicate_finder/app/style.dart';
-import 'package:duplicate_finder/src/rust/api/project_api.dart';
-import 'package:duplicate_finder/src/rust/project.dart';
+import 'package:scanner/app/style.dart';
+import 'package:scanner/src/rust/api/project_api.dart';
+import 'package:scanner/src/rust/project.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
