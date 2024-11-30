@@ -1,6 +1,6 @@
-# duplicate_finder
+# scanner
 
-a simple tool to find duplicated files
+a simple tool to search files or folders
 
 ## changelog
 
