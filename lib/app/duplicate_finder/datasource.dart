@@ -1,9 +1,9 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:data_table_2/data_table_2.dart';
-import 'package:duplicate_finder/src/rust/api/tools_api.dart';
-import 'package:duplicate_finder/src/rust/scanner/compare_result.dart';
-import 'package:duplicate_finder/src/rust/scanner/file.dart' show File;
+import 'package:scanner/src/rust/api/tools_api.dart';
+import 'package:scanner/src/rust/scanner/compare_result.dart';
+import 'package:scanner/src/rust/scanner/file.dart' show File;
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +12,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'notifier.dart';
-import 'toast_utils.dart';
+import '../toast_utils.dart';
 
 class ScannerDatasource extends DataTableSource {
   final BuildContext context;

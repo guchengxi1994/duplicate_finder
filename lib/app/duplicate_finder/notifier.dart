@@ -1,7 +1,7 @@
-import 'package:duplicate_finder/src/rust/api/scanner_api.dart';
-import 'package:duplicate_finder/src/rust/scanner/compare_result.dart';
-import 'package:duplicate_finder/src/rust/scanner/event.dart';
-import 'package:duplicate_finder/src/rust/scanner/file.dart';
+import 'package:scanner/src/rust/api/scanner_api.dart';
+import 'package:scanner/src/rust/scanner/compare_result.dart';
+import 'package:scanner/src/rust/scanner/event.dart';
+import 'package:scanner/src/rust/scanner/file.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

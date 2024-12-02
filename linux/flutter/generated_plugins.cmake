@@ -4,12 +4,12 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_linux
-  screen_retriever
+  screen_retriever_linux
   window_manager
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
-  rust_lib_duplicate_finder
+  rust_lib_scanner
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

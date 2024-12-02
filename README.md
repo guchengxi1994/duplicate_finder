@@ -1,9 +1,15 @@
-# duplicate_finder
+# scanner
 
-a simple tool to find duplicated files
+a simple tool to search files or folders
 
 ## changelog
 
+* 2.0.0:
+  
+  * caculate folder size and draw treemap
+
+    ![image-20241129165523838](image-20241129165523838.png)
+  
 * 1.2.2:
   * add progress bar
 

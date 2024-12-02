@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:duplicate_finder/src/rust/frb_generated.dart';
+import 'package:scanner/src/rust/frb_generated.dart';
 import 'package:logging/logging.dart';
 import 'package:window_manager/window_manager.dart';
 

@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "duplicate_finder" "\0"
+            VALUE "CompanyName", "org.xiaoshuyui" "\0"
+            VALUE "FileDescription", "scanner" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "duplicate_finder" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "duplicate_finder.exe" "\0"
-            VALUE "ProductName", "duplicate_finder" "\0"
+            VALUE "InternalName", "scanner" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2024 org.xiaoshuyui. All rights reserved." "\0"
+            VALUE "OriginalFilename", "scanner.exe" "\0"
+            VALUE "ProductName", "scanner" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

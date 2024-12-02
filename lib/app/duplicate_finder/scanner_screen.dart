@@ -1,13 +1,14 @@
 import 'package:data_table_2/data_table_2.dart';
-import 'package:duplicate_finder/app/datasource.dart';
-import 'package:duplicate_finder/src/rust/api/scanner_api.dart';
-import 'package:duplicate_finder/src/rust/scanner/compare_result.dart';
+import 'package:scanner/app/duplicate_finder/datasource.dart';
+
+import 'package:scanner/src/rust/api/scanner_api.dart';
+import 'package:scanner/src/rust/scanner/compare_result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:square_progress_bar/square_progress_bar.dart';
 
 import 'notifier.dart';
-import 'style.dart';
+import '../style.dart';
 
 class ScannerScreen extends ConsumerStatefulWidget {
   const ScannerScreen({super.key});

@@ -1,31 +1,39 @@
-name: duplicate_finder
-description: "a duplicate finder tool."
+name: scanner
+description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.2.1
+version: 2.0.0
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.5.4
 
 dependencies:
+  animated_custom_dropdown: ^3.1.1
   animated_text_kit: ^4.2.2
   auto_size_text: ^3.0.0
   cupertino_icons: ^1.0.8
   data_table_2: ^2.5.15
   file_selector: ^1.0.3
-  filesize: ^2.0.1
+  filesize: 
+    git:
+      url: https://github.com/guchengxi1994/filesize.git
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
-  flutter_rust_bridge: 2.2.0
+  flutter_rust_bridge: 2.5.1
   flutter_tags_x: ^1.1.0
   freezed_annotation: ^2.4.4
+  loading_indicator: ^3.1.1
   logging: ^1.2.0
   riverpod: ^2.5.1
-  rust_lib_duplicate_finder:
+  rust_lib_scanner:
     path: rust_builder
   square_progress_bar: ^1.1.1
   toastification: ^2.1.0
+  treemap:
+    git:
+      url: https://github.com/guchengxi1994/treemap.git
+      ref: cb2ba3aa0a35e151d4ea03771966c3fad72d7786
   window_manager: ^0.4.0
 
 dev_dependencies:
@@ -33,19 +41,17 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: "^0.13.1"
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
   freezed: ^2.5.7
 
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
+# dependency_overrides:
+#   treemap:
+#     path: D:/github_repo/treemap
+#   filesize:
+#     path: D:/github_repo/filesize_plus
 
-# The following section is specific to Flutter packages.
 flutter:
-
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
@@ -95,3 +101,5 @@ flutter_launcher_icons:   # flutter pub run flutter_launcher_icons
   macos:
     generate: true
     image_path: "assets/icon.jpeg"
+
+## rename setAppName --targets linux,windows,macos --value "scanner" 
