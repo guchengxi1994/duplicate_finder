@@ -2,7 +2,7 @@ name: scanner
 description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 2.0.0
+version: 2.1.0
 
 environment:
   sdk: ^3.5.4
@@ -11,6 +11,7 @@ dependencies:
   animated_custom_dropdown: ^3.1.1
   animated_text_kit: ^4.2.2
   auto_size_text: ^3.0.0
+  contextmenu: ^3.0.0
   cupertino_icons: ^1.0.8
   data_table_2: ^2.5.15
   file_selector: ^1.0.3
@@ -45,11 +46,11 @@ dev_dependencies:
   freezed: ^2.5.7
 
 
-# dependency_overrides:
-#   treemap:
-#     path: D:/github_repo/treemap
-#   filesize:
-#     path: D:/github_repo/filesize_plus
+dependency_overrides:
+  treemap:
+    path: D:/github_repo/treemap
+  filesize:
+    path: D:/github_repo/filesize_plus
 
 flutter:
   uses-material-design: true

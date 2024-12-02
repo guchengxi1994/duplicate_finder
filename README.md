@@ -4,6 +4,10 @@ a simple tool to search files or folders
 
 ## changelog
 
+* 2.1.0 (unreleased):
+  
+  * inspect child folder
+
 * 2.0.0:
   
   * caculate folder size and draw treemap

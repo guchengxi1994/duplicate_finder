@@ -11,23 +11,27 @@ class ProjectViewState {
   final bool isDone;
   final List<ProjectDetail> details;
   final String? sizeCondition;
+  final String? current;
 
   ProjectViewState(
       {this.path = "",
       this.isDone = false,
       this.details = const [],
-      this.sizeCondition});
+      this.sizeCondition,
+      this.current});
 
   ProjectViewState copyWith(
       {String? path,
       bool? isDone,
       List<ProjectDetail>? details,
-      String? sizeCondition}) {
+      String? sizeCondition,
+      String? current}) {
     return ProjectViewState(
         path: path ?? this.path,
         isDone: isDone ?? this.isDone,
         details: details ?? this.details,
-        sizeCondition: sizeCondition ?? this.sizeCondition);
+        sizeCondition: sizeCondition ?? this.sizeCondition,
+        current: current ?? this.current);
   }
 }
 
@@ -54,6 +58,14 @@ class ProjectViewNotifier extends AutoDisposeNotifier<ProjectViewState> {
   @override
   ProjectViewState build() {
     return ProjectViewState();
+  }
+
+  changeCurrent(String s) {
+    if (s != "last") {
+      state = state.copyWith(current: s);
+    } else {
+      state = state.copyWith(current: "");
+    }
   }
 
   startScan(TextEditingController controller) async {
@@ -87,8 +99,16 @@ class ProjectViewNotifier extends AutoDisposeNotifier<ProjectViewState> {
 
   addDetails(ProjectDetail d) {
     state = state.copyWith(
+        current: d.path,
         details: [...state.details, d],
         isDone: d.count.toInt() == 0 && d.path == "last");
+  }
+
+  inspect(String s) {
+    refresh();
+
+    state = state.copyWith(path: s, isDone: false);
+    projectScan(p: s);
   }
 }
 

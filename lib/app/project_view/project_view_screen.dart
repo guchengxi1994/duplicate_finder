@@ -1,4 +1,5 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
+import 'package:contextmenu/contextmenu.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:scanner/app/logger.dart';
@@ -101,24 +102,39 @@ class _ProjectViewScreenState extends ConsumerState<ProjectViewScreen> {
                         backgroundColor: Colors.transparent,
                         pathBackgroundColor: Colors.black),
                   ),
-                Spacer(),
-                Material(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  elevation: 10,
-                  child: SizedBox(
-                    width: 300,
-                    height: 50,
-                    child: CustomDropdown(
-                        hintText: 'Size Condition',
-                        items: sizeConditions,
-                        onChanged: (s) {
-                          ref
-                              .read(projectViewNotifierProvider.notifier)
-                              .refreshWithSizeCondition(s);
-                        }),
+                const SizedBox(width: 10),
+                if (state.current != null &&
+                    state.current != "" &&
+                    state.current != "last")
+                  SizedBox(
+                    width: 200,
+                    child: Text(
+                      style: TextStyle(fontSize: 14),
+                      state.current!,
+                      softWrap: true,
+                      maxLines: 1,
+                      overflow: TextOverflow.clip,
+                    ),
                   ),
-                )
+                Spacer(),
+                if (state.isDone)
+                  Material(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    elevation: 10,
+                    child: SizedBox(
+                      width: 300,
+                      height: 50,
+                      child: CustomDropdown(
+                          hintText: 'Size Condition',
+                          items: sizeConditions,
+                          onChanged: (s) {
+                            ref
+                                .read(projectViewNotifierProvider.notifier)
+                                .refreshWithSizeCondition(s);
+                          }),
+                    ),
+                  )
               ],
             ),
           const SizedBox(height: 10),
@@ -141,8 +157,28 @@ class _ProjectViewScreenState extends ConsumerState<ProjectViewScreen> {
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         onTap: () {
-                                          print(n.path);
                                           openFolder(s: n.path);
+                                        },
+                                        onSecondaryTapDown: (d) {
+                                          // print(d);
+                                          showContextMenu(
+                                              d.globalPosition, context, (c) {
+                                            return [
+                                              ListTile(
+                                                leading: Icon(Icons.more_horiz),
+                                                title: Text('inspect'),
+                                                onTap: () {
+                                                  Navigator.of(c).pop();
+                                                  _controller.text = n.path;
+                                                  ref
+                                                      .read(
+                                                          projectViewNotifierProvider
+                                                              .notifier)
+                                                      .inspect(n.path);
+                                                },
+                                              )
+                                            ];
+                                          }, 10.0, 200.0);
                                         },
                                         color: Colors.primaries[n.size.toInt() %
                                             Colors.primaries.length]),
