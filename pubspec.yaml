@@ -16,7 +16,7 @@ dependencies:
   file_selector: ^1.0.3
   filesize: 
     git:
-      url: https://github.com/guchengxi1994/filesize.git
+      url: https://github.com/guchengxi1994/filesize_plus.git
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
