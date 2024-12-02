@@ -9,14 +9,16 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 class ProjectDetail {
   final String path;
   final BigInt size;
+  final BigInt count;
 
   const ProjectDetail({
     required this.path,
     required this.size,
+    required this.count,
   });
 
   @override
-  int get hashCode => path.hashCode ^ size.hashCode;
+  int get hashCode => path.hashCode ^ size.hashCode ^ count.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -24,5 +26,6 @@ class ProjectDetail {
       other is ProjectDetail &&
           runtimeType == other.runtimeType &&
           path == other.path &&
-          size == other.size;
+          size == other.size &&
+          count == other.count;
 }

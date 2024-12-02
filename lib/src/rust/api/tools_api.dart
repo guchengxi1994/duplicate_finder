@@ -10,5 +10,8 @@ import 'public.dart';
 Future<void> openFile({required String s}) =>
     RustLib.instance.api.crateApiToolsApiOpenFile(s: s);
 
+Future<void> openFolder({required String s}) =>
+    RustLib.instance.api.crateApiToolsApiOpenFolder(s: s);
+
 Future<OperationResult> removeFile({required String s}) =>
     RustLib.instance.api.crateApiToolsApiRemoveFile(s: s);

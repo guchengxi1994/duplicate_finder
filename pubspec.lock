@@ -22,6 +22,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "6.7.0"
+  animated_custom_dropdown:
+    dependency: "direct main"
+    description:
+      name: animated_custom_dropdown
+      sha256: "5a72dc209041bb53f6c7164bc2e366552d5197cdb032b1c9b2c36e3013024486"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.1.1"
   animated_text_kit:
     dependency: "direct main"
     description:
@@ -329,10 +337,9 @@ packages:
   filesize:
     dependency: "direct main"
     description:
-      name: filesize
-      sha256: f53df1f27ff60e466eefcd9df239e02d4722d5e2debee92a87dfd99ac66de2af
-      url: "https://pub.flutter-io.cn"
-    source: hosted
+      path: "D:\\github_repo\\filesize_plus"
+      relative: false
+    source: path
     version: "2.0.1"
   fixnum:
     dependency: transitive
@@ -533,6 +540,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "5.0.0"
+  loading_indicator:
+    dependency: "direct main"
+    description:
+      name: loading_indicator
+      sha256: a101ffb2aa3e646137d7810bfa90b50525dd3f72c01235b6df7491cf6af6f284
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.1.1"
   logging:
     dependency: "direct main"
     description:

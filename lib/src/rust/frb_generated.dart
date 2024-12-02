@@ -76,7 +76,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.5.1';
 
   @override
-  int get rustContentHash => -2117530524;
+  int get rustContentHash => -934338019;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -108,6 +108,8 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateApiSimpleInitApp();
 
   Future<void> crateApiToolsApiOpenFile({required String s});
+
+  Future<void> crateApiToolsApiOpenFolder({required String s});
 
   Future<OperationResult> crateApiToolsApiRemoveFile({required String s});
 }
@@ -390,13 +392,37 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<OperationResult> crateApiToolsApiRemoveFile({required String s}) {
+  Future<void> crateApiToolsApiOpenFolder({required String s}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(s, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 12, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_unit,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiToolsApiOpenFolderConstMeta,
+      argValues: [s],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiToolsApiOpenFolderConstMeta => const TaskConstMeta(
+        debugName: "open_folder",
+        argNames: ["s"],
+      );
+
+  @override
+  Future<OperationResult> crateApiToolsApiRemoveFile({required String s}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_String(s, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 13, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_operation_result,
@@ -566,11 +592,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   ProjectDetail dco_decode_project_detail(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 2)
-      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
     return ProjectDetail(
       path: dco_decode_String(arr[0]),
       size: dco_decode_u_64(arr[1]),
+      count: dco_decode_u_64(arr[2]),
     );
   }
 
@@ -782,7 +809,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_path = sse_decode_String(deserializer);
     var var_size = sse_decode_u_64(deserializer);
-    return ProjectDetail(path: var_path, size: var_size);
+    var var_count = sse_decode_u_64(deserializer);
+    return ProjectDetail(path: var_path, size: var_size, count: var_count);
   }
 
   @protected
@@ -1001,6 +1029,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.path, serializer);
     sse_encode_u_64(self.size, serializer);
+    sse_encode_u_64(self.count, serializer);
   }
 
   @protected

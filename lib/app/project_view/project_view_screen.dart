@@ -1,36 +1,59 @@
+import 'package:animated_custom_dropdown/custom_dropdown.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:loading_indicator/loading_indicator.dart';
+import 'package:scanner/app/logger.dart';
 import 'package:scanner/app/style.dart';
 import 'package:scanner/src/rust/api/project_api.dart';
-import 'package:scanner/src/rust/project.dart';
-import 'package:file_selector/file_selector.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
+import 'package:scanner/src/rust/api/tools_api.dart';
 import 'package:treemap/treemap.dart';
 
-class ProjectViewScreen extends StatefulWidget {
+import 'notifier.dart';
+
+class ProjectViewScreen extends ConsumerStatefulWidget {
   const ProjectViewScreen({super.key});
 
   @override
-  State<ProjectViewScreen> createState() => _ProjectViewScreenState();
+  ConsumerState<ProjectViewScreen> createState() => _ProjectViewScreenState();
 }
 
-class _ProjectViewScreenState extends State<ProjectViewScreen> {
+class _ProjectViewScreenState extends ConsumerState<ProjectViewScreen> {
   final stream = projectScanStream();
-
-  List<ProjectDetail> v = [];
 
   @override
   void initState() {
     super.initState();
     stream.listen((event) {
-      print("${event.path}   ${filesize(event.size)}");
-      setState(() {
-        v.add(event);
-      });
+      logger.info("${event.path}   ${filesize(event.size)}");
+      ref.read(projectViewNotifierProvider.notifier).addDetails(event);
     });
   }
 
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  List<String> sizeConditions = [
+    ">= 100 MB",
+    ">= 200 MB",
+    ">= 500 MB",
+    ">= 1 GB",
+    ">= 2 GB",
+    ">= 5 GB",
+    ">= 10 GB",
+    ">= 20 GB",
+    ">= 50 GB",
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(projectViewNotifierProvider);
+
     return Container(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -41,6 +64,7 @@ class _ProjectViewScreenState extends State<ProjectViewScreen> {
               children: [
                 Expanded(
                     child: TextField(
+                  controller: _controller,
                   enabled: false,
                   decoration: AppStyle.inputDecorationWithHintAndLabel(
                       "Please select a folder to scan", "Folder Path"),
@@ -50,25 +74,64 @@ class _ProjectViewScreenState extends State<ProjectViewScreen> {
                 ),
                 ElevatedButton(
                     onPressed: () async {
-                      final String? directoryPath = await getDirectoryPath();
-                      if (directoryPath == null) {
-                        return;
-                      }
-                      projectScan(p: directoryPath);
+                      ref
+                          .read(projectViewNotifierProvider.notifier)
+                          .startScan(_controller);
                     },
                     child: const Text("Select folder"))
               ],
             ),
           ),
+          const SizedBox(height: 10),
+          if (state.details.isNotEmpty)
+            Row(
+              children: [
+                if (!state.isDone)
+                  SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: LoadingIndicator(
+                        indicatorType: Indicator.ballRotate,
+                        colors: [
+                          Colors.blue,
+                          Colors.purpleAccent,
+                          Colors.green
+                        ],
+                        strokeWidth: 2,
+                        backgroundColor: Colors.transparent,
+                        pathBackgroundColor: Colors.black),
+                  ),
+                Spacer(),
+                Material(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  elevation: 10,
+                  child: SizedBox(
+                    width: 300,
+                    height: 50,
+                    child: CustomDropdown(
+                        hintText: 'Size Condition',
+                        items: sizeConditions,
+                        onChanged: (s) {
+                          ref
+                              .read(projectViewNotifierProvider.notifier)
+                              .refreshWithSizeCondition(s);
+                        }),
+                  ),
+                )
+              ],
+            ),
+          const SizedBox(height: 10),
           Expanded(
-            child: v.isEmpty
+            child: state.getDetails().isEmpty
                 ? SizedBox()
                 : TreeMapLayout(
                     duration: Duration(milliseconds: 200),
                     tile: Squarify(),
                     children: [
                         TreeNode.node(
-                            children: v
+                            children: state
+                                .getDetails()
                                 .map(
                                   (n) => TreeNode.leaf(
                                     margin: EdgeInsets.all(5),
@@ -77,7 +140,10 @@ class _ProjectViewScreenState extends State<ProjectViewScreen> {
                                           "${n.path}(${filesize(n.size)})",
                                           style: TextStyle(color: Colors.white),
                                         ),
-                                        onTap: () {},
+                                        onTap: () {
+                                          print(n.path);
+                                          openFolder(s: n.path);
+                                        },
                                         color: Colors.primaries[n.size.toInt() %
                                             Colors.primaries.length]),
                                     value: n.size.toInt(),

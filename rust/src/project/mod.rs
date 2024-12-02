@@ -12,31 +12,38 @@ fn get_file_size(path: &String) -> u64 {
     }
 }
 
-fn get_folder_size(path: &String) -> anyhow::Result<u64> {
+fn get_folder_size(path: &String) -> anyhow::Result<(u64, u64)> {
     let mut size: u64 = 0;
+    let mut count: u64 = 0;
     for entry in WalkDir::new(&path).into_iter().filter_map(|e| e.ok()) {
         if entry.path().is_file() {
             let l = entry.path().display().to_string();
             size += get_file_size(&l);
+            count += 1;
         }
     }
 
-    anyhow::Ok(size)
+    anyhow::Ok((size, count))
 }
 
 #[derive(Debug)]
 pub struct ProjectDetail {
     pub path: String,
     pub size: u64,
+    pub count: u64,
 }
 
 pub static PROJECT_DETAIL_SINK: RwLock<Option<StreamSink<ProjectDetail>>> = RwLock::new(None);
 
-fn send_detail_event(p: String, si: u64) {
+fn send_detail_event(p: String, si: u64, count: u64) {
     match PROJECT_DETAIL_SINK.try_read() {
         Ok(s) => match s.as_ref() {
             Some(s0) => {
-                let _ = s0.add(ProjectDetail { path: p, size: si });
+                let _ = s0.add(ProjectDetail {
+                    path: p,
+                    size: si,
+                    count,
+                });
             }
             None => {
                 println!("[rust-error] Stream is None");
@@ -65,12 +72,12 @@ impl ProjectView {
             println!("[rust] scanning {:?}", l);
             if entry.path().is_file() {
                 let size = get_file_size(&l);
-                send_detail_event(l, size);
+                send_detail_event(l, size, 1);
             } else {
                 let size = get_folder_size(&l);
                 match size {
                     Ok(_u) => {
-                        send_detail_event(l, _u);
+                        send_detail_event(l, _u.0, _u.1);
                     }
                     Err(_e) => {
                         println!("project view Error: {:?}", _e)
@@ -79,7 +86,7 @@ impl ProjectView {
             }
         }
 
-        send_detail_event("last".to_string(), 0);
+        send_detail_event("last".to_string(), 0, 0);
 
         anyhow::Ok(())
     }
