@@ -68,7 +68,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                                   .read(scannerNotifierProvider.notifier)
                                   .startScan();
                             },
-                      child: const Text("Select folder"))
+                      child: const Text("选择文件夹"))
                 ],
               ),
             ),

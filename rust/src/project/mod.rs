@@ -1,5 +1,6 @@
-use std::sync::RwLock;
+use std::{sync::RwLock, thread};
 
+use crossbeam::channel;
 use walkdir::WalkDir;
 
 use crate::frb_generated::StreamSink;
@@ -36,14 +37,19 @@ pub struct ProjectDetail {
 pub static PROJECT_DETAIL_SINK: RwLock<Option<StreamSink<ProjectDetail>>> = RwLock::new(None);
 
 fn send_detail_event(p: String, si: u64, count: u64) {
+    let d = ProjectDetail {
+        path: p,
+        size: si,
+        count,
+    };
+    send_detail_event_(d);
+}
+
+fn send_detail_event_(d: ProjectDetail) {
     match PROJECT_DETAIL_SINK.try_read() {
         Ok(s) => match s.as_ref() {
             Some(s0) => {
-                let _ = s0.add(ProjectDetail {
-                    path: p,
-                    size: si,
-                    count,
-                });
+                let _ = s0.add(d);
             }
             None => {
                 println!("[rust-error] Stream is None");
@@ -87,6 +93,97 @@ impl ProjectView {
         }
 
         send_detail_event("last".to_string(), 0, 0);
+
+        anyhow::Ok(())
+    }
+
+    pub async fn scan_in_multi_threads(&self) -> anyhow::Result<()> {
+        let (sender, receiver) = channel::unbounded::<String>();
+
+        // 生产者线程：扫描路径并将路径发送到通道
+        let producer = thread::spawn({
+            let root_path = self.0.clone();
+            let sender = sender.clone();
+            move || {
+                for entry in WalkDir::new(&root_path)
+                    .max_depth(1)
+                    .into_iter()
+                    .filter_map(|e| e.ok())
+                {
+                    if entry.path() == std::path::Path::new(&root_path) {
+                        continue; // 跳过根目录
+                    }
+                    sender
+                        .send(entry.path().display().to_string())
+                        .expect("Failed to send path");
+                }
+            }
+        });
+
+        // 消费者线程：处理路径
+        let mut consumers = Vec::new();
+        for _ in 0..4 {
+            let receiver = receiver.clone();
+            let consumer = thread::spawn(move || {
+                while let Ok(path) = receiver.recv() {
+                    if let Ok(detail) = ProjectView::process_path(&path) {
+                        send_detail_event_(detail);
+                    }
+                }
+            });
+            consumers.push(consumer);
+        }
+
+        // 等待生产者完成
+        producer.join().expect("Producer thread panicked");
+        drop(sender); // 关闭发送端，通知消费者退出
+
+        // 等待消费者完成
+        for consumer in consumers {
+            consumer.join().expect("Consumer thread panicked");
+        }
+
+        send_detail_event("last".to_string(), 0, 0);
+
+        anyhow::Ok(())
+    }
+
+    fn process_path(path: &str) -> anyhow::Result<ProjectDetail> {
+        let metadata = std::fs::metadata(path)?;
+        if metadata.is_dir() {
+            let (size, count) = get_folder_size(&path.to_string())?;
+            return Ok(ProjectDetail {
+                path: path.to_string(),
+                size,
+                count,
+            });
+        } else if metadata.is_file() {
+            let size = get_file_size(&path.to_string());
+            return Ok(ProjectDetail {
+                path: path.to_string(),
+                size,
+                count: 1,
+            });
+        }
+        anyhow::bail!("Invalid path or unknown type")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_file_size() {
+        let path = "C:\\Users\\Administrator\\Desktop\\test.txt";
+        let size = get_file_size(&path.to_string());
+        println!("size: {}", size);
+    }
+
+    #[tokio::test]
+    async fn test_scan() -> anyhow::Result<()> {
+        let p = ProjectView(r"D:\github_repo".to_string());
+        p.scan_in_multi_threads().await?;
 
         anyhow::Ok(())
     }

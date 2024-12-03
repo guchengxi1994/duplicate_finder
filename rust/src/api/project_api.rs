@@ -25,3 +25,17 @@ pub fn project_scan(p: String) {
         }
     });
 }
+
+pub fn project_scan_really_fast(p: String) {
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    rt.block_on(async {
+        let pv = ProjectView { 0: p };
+        let r = pv.scan_in_multi_threads().await;
+        match r {
+            Ok(_) => {}
+            Err(e) => {
+                println!("[rust] error {}", e);
+            }
+        }
+    });
+}

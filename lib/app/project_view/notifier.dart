@@ -6,32 +6,51 @@ import 'package:scanner/app/logger.dart';
 import 'package:scanner/src/rust/api/project_api.dart';
 import 'package:scanner/src/rust/project.dart';
 
+enum ProjectViewScanningStatus { done, none, on }
+
+enum ShowOption {
+  size("占用空间"),
+  count("文件数量");
+
+  final String label;
+
+  const ShowOption(this.label);
+}
+
 class ProjectViewState {
   final String path;
-  final bool isDone;
+  final ProjectViewScanningStatus status;
   final List<ProjectDetail> details;
   final String? sizeCondition;
   final String? current;
+  final ShowOption showOption;
+  final bool accelerate;
 
   ProjectViewState(
       {this.path = "",
-      this.isDone = false,
+      this.status = ProjectViewScanningStatus.none,
       this.details = const [],
       this.sizeCondition,
-      this.current});
+      this.current,
+      this.showOption = ShowOption.size,
+      this.accelerate = false});
 
   ProjectViewState copyWith(
       {String? path,
-      bool? isDone,
+      ProjectViewScanningStatus? status,
       List<ProjectDetail>? details,
       String? sizeCondition,
-      String? current}) {
+      String? current,
+      ShowOption? showOption,
+      bool? accelerate}) {
     return ProjectViewState(
         path: path ?? this.path,
-        isDone: isDone ?? this.isDone,
+        status: status ?? this.status,
         details: details ?? this.details,
         sizeCondition: sizeCondition ?? this.sizeCondition,
-        current: current ?? this.current);
+        current: current ?? this.current,
+        showOption: showOption ?? this.showOption,
+        accelerate: accelerate ?? this.accelerate);
   }
 }
 
@@ -68,6 +87,12 @@ class ProjectViewNotifier extends AutoDisposeNotifier<ProjectViewState> {
     }
   }
 
+  changeAccelerate(bool b) {
+    if (b != state.accelerate) {
+      state = state.copyWith(accelerate: b);
+    }
+  }
+
   startScan(TextEditingController controller) async {
     final String? directoryPath = await getDirectoryPath();
     if (directoryPath == null) {
@@ -77,12 +102,22 @@ class ProjectViewNotifier extends AutoDisposeNotifier<ProjectViewState> {
 
     controller.text = directoryPath;
 
-    state = state.copyWith(path: directoryPath, isDone: false);
-    projectScan(p: directoryPath);
+    state = state.copyWith(
+        path: directoryPath, status: ProjectViewScanningStatus.on);
+
+    if (state.accelerate) {
+      projectScanReallyFast(p: directoryPath);
+    } else {
+      projectScan(p: directoryPath);
+    }
   }
 
   refresh() {
     state = ProjectViewState();
+  }
+
+  changeShowOption(ShowOption s) {
+    state = state.copyWith(showOption: s);
   }
 
   refreshWithSizeCondition(String? condition) {
@@ -94,21 +129,27 @@ class ProjectViewNotifier extends AutoDisposeNotifier<ProjectViewState> {
   }
 
   done() {
-    state = state.copyWith(isDone: true);
+    state = state.copyWith(status: ProjectViewScanningStatus.done);
   }
 
   addDetails(ProjectDetail d) {
     state = state.copyWith(
         current: d.path,
         details: [...state.details, d],
-        isDone: d.count.toInt() == 0 && d.path == "last");
+        status: d.count.toInt() == 0 && d.path == "last"
+            ? ProjectViewScanningStatus.done
+            : ProjectViewScanningStatus.on);
   }
 
   inspect(String s) {
     refresh();
 
-    state = state.copyWith(path: s, isDone: false);
-    projectScan(p: s);
+    state = state.copyWith(path: s, status: ProjectViewScanningStatus.on);
+    if (state.accelerate) {
+      projectScanReallyFast(p: s);
+    } else {
+      projectScan(p: s);
+    }
   }
 }
 

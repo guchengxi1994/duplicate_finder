@@ -9,6 +9,7 @@ crate-type = ["cdylib", "staticlib"]
 [dependencies]
 anyhow = "1"
 async-trait = "0.1.81"
+crossbeam = "0.8.4"
 flutter_rust_bridge = "=2.5.1"
 levenshtein = "1.0.5"
 once_cell = "1.19.0"
