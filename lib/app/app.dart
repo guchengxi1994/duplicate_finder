@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:toastification/toastification.dart';
 
 import 'duplicate_finder/scanner_screen.dart';
+import 'hybrid_search/hybrid_search_screen.dart';
 import 'sidebar/sidebar_notifier.dart';
 
 class MyApp extends StatelessWidget {
@@ -37,7 +38,11 @@ class _Inner extends ConsumerWidget {
             Expanded(
                 child: PageView(
               controller: ref.read(sidebarProvider.notifier).pageController,
-              children: [ScannerScreen(), ProjectViewScreen()],
+              children: [
+                ScannerScreen(),
+                ProjectViewScreen(),
+                HybridSearchScreen()
+              ],
             ))
           ],
         ),

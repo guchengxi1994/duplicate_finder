@@ -34,6 +34,17 @@ class Sidebar extends ConsumerWidget {
           },
           index: 1,
           title: "大文件(夹)扫描"),
+      SidebarItem(
+          icon: const Icon(
+            Icons.search,
+            color: Colors.blueAccent,
+          ),
+          iconInactive: const Icon(Icons.search),
+          onClick: (v) {
+            ref.read(sidebarProvider.notifier).setIndex(v);
+          },
+          index: 2,
+          title: "混合查询"),
     ];
 
     return Padding(
