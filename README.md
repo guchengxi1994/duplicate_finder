@@ -4,6 +4,9 @@ a simple tool to search files or folders
 
 ## changelog
 
+* 3.0.0 (WIP):
+  * add hybrid search
+
 * 2.1.0 (unreleased):
   
   * inspect child folder
