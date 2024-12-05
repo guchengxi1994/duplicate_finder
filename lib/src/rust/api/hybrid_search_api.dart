@@ -9,6 +9,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 Future<List<String>> hybridSearchSync(
         {required String p,
+        required bool caseSensitive,
         required List<String> startsWith,
         required List<String> endsWith,
         required List<String> includes,
@@ -17,6 +18,7 @@ Future<List<String>> hybridSearchSync(
         required SearchType searchType}) =>
     RustLib.instance.api.crateApiHybridSearchApiHybridSearchSync(
         p: p,
+        caseSensitive: caseSensitive,
         startsWith: startsWith,
         endsWith: endsWith,
         includes: includes,
@@ -29,6 +31,7 @@ Stream<HybridSearchDetail> searchStream() =>
 
 Future<void> hybridSearchStream(
         {required String p,
+        required bool caseSensitive,
         required List<String> startsWith,
         required List<String> endsWith,
         required List<String> includes,
@@ -37,6 +40,7 @@ Future<void> hybridSearchStream(
         required SearchType searchType}) =>
     RustLib.instance.api.crateApiHybridSearchApiHybridSearchStream(
         p: p,
+        caseSensitive: caseSensitive,
         startsWith: startsWith,
         endsWith: endsWith,
         includes: includes,

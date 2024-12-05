@@ -68,6 +68,7 @@ fn wire__crate__api__hybrid_search_api__hybrid_search_stream_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_p = <String>::sse_decode(&mut deserializer);
+            let api_case_sensitive = <bool>::sse_decode(&mut deserializer);
             let api_starts_with = <Vec<String>>::sse_decode(&mut deserializer);
             let api_ends_with = <Vec<String>>::sse_decode(&mut deserializer);
             let api_includes = <Vec<String>>::sse_decode(&mut deserializer);
@@ -80,6 +81,7 @@ fn wire__crate__api__hybrid_search_api__hybrid_search_stream_impl(
                     let output_ok = Result::<_, ()>::Ok({
                         crate::api::hybrid_search_api::hybrid_search_stream(
                             api_p,
+                            api_case_sensitive,
                             api_starts_with,
                             api_ends_with,
                             api_includes,
@@ -117,6 +119,7 @@ fn wire__crate__api__hybrid_search_api__hybrid_search_sync_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_p = <String>::sse_decode(&mut deserializer);
+            let api_case_sensitive = <bool>::sse_decode(&mut deserializer);
             let api_starts_with = <Vec<String>>::sse_decode(&mut deserializer);
             let api_ends_with = <Vec<String>>::sse_decode(&mut deserializer);
             let api_includes = <Vec<String>>::sse_decode(&mut deserializer);
@@ -129,6 +132,7 @@ fn wire__crate__api__hybrid_search_api__hybrid_search_sync_impl(
                     let output_ok =
                         Result::<_, ()>::Ok(crate::api::hybrid_search_api::hybrid_search_sync(
                             api_p,
+                            api_case_sensitive,
                             api_starts_with,
                             api_ends_with,
                             api_includes,

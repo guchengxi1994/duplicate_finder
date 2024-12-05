@@ -1,7 +1,11 @@
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:scanner/app/hybrid_search/expandable_list.dart';
+import 'package:scanner/app/style.dart';
 import 'package:scanner/src/rust/api/hybrid_search_api.dart';
 import 'package:scanner/src/rust/hybrid_search.dart';
+
+import 'hybrid_search_detail_widget.dart';
 
 class HybridSearchScreen extends StatefulWidget {
   const HybridSearchScreen({super.key});
@@ -14,13 +18,24 @@ class _HybridSearchScreenState extends State<HybridSearchScreen> {
   bool isExpanded = false;
   final GlobalKey<ExpandableListState> key = GlobalKey<ExpandableListState>();
   final stream = searchStream();
+  List<HybridSearchDetail> results = [];
+  final _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     stream.listen((event) {
-      print(event.path);
+      // print(event.path);
+      setState(() {
+        results.add(event);
+      });
     });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -46,29 +61,60 @@ class _HybridSearchScreenState extends State<HybridSearchScreen> {
                     height: 50,
                     child: Row(
                       children: [
-                        Spacer(),
-                        InkWell(
-                          borderRadius: BorderRadius.circular(10),
-                          onTap: () {
-                            setState(() {
-                              isExpanded = !isExpanded;
-                            });
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(10),
-                            width: 300,
-                            decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.5),
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: Colors.grey[300]!)),
-                            child: Center(
-                              child: Text("混合高级检索"),
-                            ),
-                          ),
+                        Expanded(
+                            child: TextField(
+                          controller: _controller,
+                          enabled: true,
+                          readOnly: true,
+                          decoration: AppStyle.inputDecorationWithHintAndLabel(
+                              "Please select a folder to scan", "Folder Path",
+                              suffix: Padding(
+                                padding: EdgeInsets.only(right: 10),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(10),
+                                  onTap: () {
+                                    setState(() {
+                                      isExpanded = !isExpanded;
+                                    });
+                                  },
+                                  child: Container(
+                                    height: 40,
+                                    padding: EdgeInsets.all(10),
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.5),
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                            color: Colors.grey[300]!)),
+                                    child: Center(
+                                      child: Text("高级检索"),
+                                    ),
+                                  ),
+                                ),
+                              )),
+                        )),
+                        const SizedBox(
+                          width: 20,
                         ),
-                        Spacer(),
+                        ElevatedButton(
+                            onPressed: () async {
+                              final String? directoryPath =
+                                  await getDirectoryPath();
+                              if (directoryPath == null) {
+                                return;
+                              }
+
+                              _controller.text = directoryPath;
+                            },
+                            child: const Text("选择文件夹")),
+                        const SizedBox(
+                          width: 20,
+                        ),
                         InkWell(
                           onTap: () {
+                            if (_controller.text.isEmpty) {
+                              return;
+                            }
                             final v = key.currentState!.getValues();
                             if (v.$1.isEmpty &&
                                 v.$2.isEmpty &&
@@ -79,7 +125,8 @@ class _HybridSearchScreenState extends State<HybridSearchScreen> {
                             }
 
                             hybridSearchStream(
-                              p: r"D:\github_repo\duplicate_finder",
+                              p: _controller.text,
+                              caseSensitive: false,
                               startsWith: v.$1,
                               endsWith: v.$2,
                               includes: v.$3,
@@ -93,7 +140,17 @@ class _HybridSearchScreenState extends State<HybridSearchScreen> {
                       ],
                     ),
                   ),
-                  Expanded(child: Column())
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                          children: results
+                              .map((e) => HybridSearchDetailWidget(
+                                    detail: e,
+                                    find: key.currentState!.getAll(),
+                                  ))
+                              .toList()),
+                    ),
+                  )
                 ],
               ),
               AnimatedPositioned(

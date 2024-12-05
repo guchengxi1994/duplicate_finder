@@ -91,6 +91,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 abstract class RustLibApi extends BaseApi {
   Future<void> crateApiHybridSearchApiHybridSearchStream(
       {required String p,
+      required bool caseSensitive,
       required List<String> startsWith,
       required List<String> endsWith,
       required List<String> includes,
@@ -100,6 +101,7 @@ abstract class RustLibApi extends BaseApi {
 
   Future<List<String>> crateApiHybridSearchApiHybridSearchSync(
       {required String p,
+      required bool caseSensitive,
       required List<String> startsWith,
       required List<String> endsWith,
       required List<String> includes,
@@ -149,6 +151,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @override
   Future<void> crateApiHybridSearchApiHybridSearchStream(
       {required String p,
+      required bool caseSensitive,
       required List<String> startsWith,
       required List<String> endsWith,
       required List<String> includes,
@@ -159,6 +162,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(p, serializer);
+        sse_encode_bool(caseSensitive, serializer);
         sse_encode_list_String(startsWith, serializer);
         sse_encode_list_String(endsWith, serializer);
         sse_encode_list_String(includes, serializer);
@@ -175,6 +179,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       constMeta: kCrateApiHybridSearchApiHybridSearchStreamConstMeta,
       argValues: [
         p,
+        caseSensitive,
         startsWith,
         endsWith,
         includes,
@@ -191,6 +196,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         debugName: "hybrid_search_stream",
         argNames: [
           "p",
+          "caseSensitive",
           "startsWith",
           "endsWith",
           "includes",
@@ -203,6 +209,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @override
   Future<List<String>> crateApiHybridSearchApiHybridSearchSync(
       {required String p,
+      required bool caseSensitive,
       required List<String> startsWith,
       required List<String> endsWith,
       required List<String> includes,
@@ -213,6 +220,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(p, serializer);
+        sse_encode_bool(caseSensitive, serializer);
         sse_encode_list_String(startsWith, serializer);
         sse_encode_list_String(endsWith, serializer);
         sse_encode_list_String(includes, serializer);
@@ -229,6 +237,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       constMeta: kCrateApiHybridSearchApiHybridSearchSyncConstMeta,
       argValues: [
         p,
+        caseSensitive,
         startsWith,
         endsWith,
         includes,
@@ -245,6 +254,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         debugName: "hybrid_search_sync",
         argNames: [
           "p",
+          "caseSensitive",
           "startsWith",
           "endsWith",
           "includes",

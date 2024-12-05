@@ -7,6 +7,7 @@ use crate::{
 
 pub fn hybrid_search_sync(
     p: String,
+    case_sensitive: bool,
     starts_with: Vec<String>,
     ends_with: Vec<String>,
     includes: Vec<String>,
@@ -14,7 +15,15 @@ pub fn hybrid_search_sync(
     regex: Vec<String>,
     search_type: SearchType,
 ) -> Vec<String> {
-    let h = HybridSearch::new(p, starts_with, ends_with, includes, excludes, regex);
+    let h = HybridSearch::new(
+        p,
+        case_sensitive,
+        starts_with,
+        ends_with,
+        includes,
+        excludes,
+        regex,
+    );
     h.search(search_type)
 }
 
@@ -27,6 +36,7 @@ pub fn search_stream(s: StreamSink<HybridSearchDetail>) -> anyhow::Result<()> {
 
 pub fn hybrid_search_stream(
     p: String,
+    case_sensitive: bool,
     starts_with: Vec<String>,
     ends_with: Vec<String>,
     includes: Vec<String>,
@@ -34,7 +44,15 @@ pub fn hybrid_search_stream(
     regex: Vec<String>,
     search_type: SearchType,
 ) {
-    let h = HybridSearch::new(p, starts_with, ends_with, includes, excludes, regex);
+    let h = HybridSearch::new(
+        p,
+        case_sensitive,
+        starts_with,
+        ends_with,
+        includes,
+        excludes,
+        regex,
+    );
     let r = h.search_stream(search_type);
     match r {
         Ok(_) => {}

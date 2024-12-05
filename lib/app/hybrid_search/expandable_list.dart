@@ -29,6 +29,10 @@ class ExpandableListState extends State<ExpandableList> {
     );
   }
 
+  List<String> getAll() {
+    return [...include, ...exculde, ...startsWith, ...endsWith, ...regExp];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(

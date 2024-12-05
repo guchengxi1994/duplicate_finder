@@ -1,8 +1,81 @@
-use std::sync::RwLock;
+use std::{sync::RwLock, time::SystemTime};
 
 use walkdir::WalkDir;
 
 use crate::frb_generated::StreamSink;
+
+pub struct Period {
+    pub start: Option<u64>,
+    pub end: Option<u64>,
+}
+
+impl Period {
+    pub fn new(start: Option<u64>, end: Option<u64>) -> Self {
+        Period { start, end }
+    }
+
+    pub fn in_this_period(&self, time: SystemTime) -> bool {
+        if self.start.is_none() && self.end.is_none() {
+            return true;
+        }
+
+        if let Some(start) = self.start {
+            if self.end.is_none() {
+                if time
+                    .duration_since(SystemTime::UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs()
+                    > start
+                {
+                    return true;
+                }
+            } else {
+                if time
+                    .duration_since(SystemTime::UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs()
+                    > start
+                    && time
+                        .duration_since(SystemTime::UNIX_EPOCH)
+                        .unwrap()
+                        .as_secs()
+                        < self.end.unwrap()
+                {
+                    return true;
+                }
+            }
+        } else if let Some(end) = self.end {
+            if self.start.is_none() {
+                if time
+                    .duration_since(SystemTime::UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs()
+                    < self.end.unwrap()
+                {
+                    return true;
+                }
+                return false;
+            } else {
+                if time
+                    .duration_since(SystemTime::UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs()
+                    > self.start.unwrap()
+                    && time
+                        .duration_since(SystemTime::UNIX_EPOCH)
+                        .unwrap()
+                        .as_secs()
+                        < end
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        false
+    }
+}
 
 pub struct HybridSearch {
     pub path: String,
@@ -11,6 +84,8 @@ pub struct HybridSearch {
     includes: Vec<Box<dyn Fn(&str) -> bool>>,
     excludes: Vec<Box<dyn Fn(&str) -> bool>>,
     regex: Vec<Box<dyn Fn(&str) -> bool>>,
+    created_at: Vec<Box<dyn Fn(&Period) -> bool>>,
+    modified_at: Vec<Box<dyn Fn(&Period) -> bool>>,
 }
 
 #[derive(Debug)]
@@ -31,6 +106,7 @@ pub static HYBRID_SEARCH_SINK: RwLock<Option<StreamSink<HybridSearchDetail>>> = 
 impl HybridSearch {
     pub fn new(
         path: String,
+        case_sensitive: bool,
         starts_with: Vec<String>,
         ends_with: Vec<String>,
         includes: Vec<String>,
@@ -41,7 +117,12 @@ impl HybridSearch {
             .iter()
             .map(|s| {
                 let s = s.clone();
-                Box::new(move |name: &str| name.starts_with(&s)) as Box<dyn Fn(&str) -> bool>
+                if !case_sensitive {
+                    Box::new(move |name: &str| name.to_lowercase().starts_with(&s.to_lowercase()))
+                        as Box<dyn Fn(&str) -> bool>
+                } else {
+                    Box::new(move |name: &str| name.starts_with(&s)) as Box<dyn Fn(&str) -> bool>
+                }
             })
             .collect();
 
@@ -49,7 +130,12 @@ impl HybridSearch {
             .iter()
             .map(|s| {
                 let s = s.clone();
-                Box::new(move |name: &str| name.ends_with(&s)) as Box<dyn Fn(&str) -> bool>
+                if !case_sensitive {
+                    Box::new(move |name: &str| name.to_lowercase().ends_with(&s.to_lowercase()))
+                        as Box<dyn Fn(&str) -> bool>
+                } else {
+                    Box::new(move |name: &str| name.ends_with(&s)) as Box<dyn Fn(&str) -> bool>
+                }
             })
             .collect();
 
@@ -57,7 +143,12 @@ impl HybridSearch {
             .iter()
             .map(|s| {
                 let s = s.clone();
-                Box::new(move |name: &str| name.contains(&s)) as Box<dyn Fn(&str) -> bool>
+                if !case_sensitive {
+                    Box::new(move |name: &str| name.to_lowercase().contains(&s.to_lowercase()))
+                        as Box<dyn Fn(&str) -> bool>
+                } else {
+                    Box::new(move |name: &str| name.contains(&s)) as Box<dyn Fn(&str) -> bool>
+                }
             })
             .collect();
 
@@ -65,7 +156,12 @@ impl HybridSearch {
             .iter()
             .map(|s| {
                 let s = s.clone();
-                Box::new(move |name: &str| !name.contains(&s)) as Box<dyn Fn(&str) -> bool>
+                if !case_sensitive {
+                    Box::new(move |name: &str| !name.to_lowercase().contains(&s.to_lowercase()))
+                        as Box<dyn Fn(&str) -> bool>
+                } else {
+                    Box::new(move |name: &str| !name.contains(&s)) as Box<dyn Fn(&str) -> bool>
+                }
             })
             .collect();
 
@@ -73,8 +169,16 @@ impl HybridSearch {
             .iter()
             .map(|s| {
                 let s = s.clone();
-                Box::new(move |name: &str| regex::Regex::new(&s).unwrap().is_match(name))
-                    as Box<dyn Fn(&str) -> bool>
+                if !case_sensitive {
+                    Box::new(move |name: &str| {
+                        regex::Regex::new(&s)
+                            .unwrap()
+                            .is_match(name.to_lowercase().as_str())
+                    }) as Box<dyn Fn(&str) -> bool>
+                } else {
+                    Box::new(move |name: &str| regex::Regex::new(&s).unwrap().is_match(name))
+                        as Box<dyn Fn(&str) -> bool>
+                }
             })
             .collect();
         HybridSearch {
@@ -84,6 +188,8 @@ impl HybridSearch {
             includes: includes_fn,
             excludes: excludes_fn,
             regex: regex_fn,
+            created_at: vec![],
+            modified_at: vec![],
         }
     }
 
